@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieApp.Server", "MovieApp.Server\MovieApp.Server.csproj", "{D7503516-02E4-4364-95C0-A12E67F219D7}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "movieapp.client", "movieapp.client\movieapp.client.esproj", "{EDDCBEEF-2380-446F-B619-9737A7969BD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7503516-02E4-4364-95C0-A12E67F219D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7503516-02E4-4364-95C0-A12E67F219D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7503516-02E4-4364-95C0-A12E67F219D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7503516-02E4-4364-95C0-A12E67F219D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDDCBEEF-2380-446F-B619-9737A7969BD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDDCBEEF-2380-446F-B619-9737A7969BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDDCBEEF-2380-446F-B619-9737A7969BD7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{EDDCBEEF-2380-446F-B619-9737A7969BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDDCBEEF-2380-446F-B619-9737A7969BD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDDCBEEF-2380-446F-B619-9737A7969BD7}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {581AD4B7-451A-4993-8CA9-786F939B8FAB}
+	EndGlobalSection
+EndGlobal
