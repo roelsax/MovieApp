@@ -1,3 +1,5 @@
+import { Movie } from "./movie";
+
 export interface Director {
   directorId: number;
   name: string;
@@ -6,4 +8,5 @@ export interface Director {
   nationality: string;
   bio: string;
   picture: string;
+  movies: Movie[];
 }

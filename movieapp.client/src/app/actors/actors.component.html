@@ -1,0 +1,15 @@
+<h1 class="mb-5 text-2xl">
+  Actors
+</h1>
+
+
+<div class="grid grid-cols-5">
+  <a routerLink="/director/{{actor.actorId}}" class="movie flex flex-col" *ngFor="let actor of actors">
+    <div class="self-center">
+      <img class="rounded-sm" width="150" src="data:image/png;base64,{{ actor.picture}}" />
+    </div>
+    <div class="title">
+      {{ actor.name }}
+    </div>
+  </a>
+</div>

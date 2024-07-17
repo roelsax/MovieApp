@@ -1,15 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieApp.Server.Models;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MovieApp.Server.Repositories
 {
     public class SQLActorRepository : IActorRepository
     {
         private readonly MovieAppContext context;
+        private readonly IWebHostEnvironment env;
 
-        public SQLActorRepository(MovieAppContext context)
+        public SQLActorRepository(MovieAppContext context, IWebHostEnvironment env)
         {
             this.context = context;
+            this.env = env; 
         }
         public async Task Add(Actor actor)
         {
@@ -31,21 +36,31 @@ namespace MovieApp.Server.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<Actor?> Get(int actorId) =>
-            await context.Actors.Where(a => a.ActorId == actorId)
+        public async Task<Actor?> Get(int actorId) {
+            var actor = await context.Actors.Where(a => a.ActorId == actorId)
                 .Include(a => a.ActorMovies)
                 .ThenInclude(am => am.Movie)
                 .FirstOrDefaultAsync();
-        
 
-        public async Task<IEnumerable<Actor>> GetActors() =>
-            await context.Actors
+            addBase64ToActor(actor);
+
+            return actor;
+        }
+       
+        public async Task<IEnumerable<Actor>> GetActors() {
+            var actors = await context.Actors
             .Include(a => a.ActorMovies)
             .ThenInclude(am => am.Movie)
             .AsNoTracking()
             .ToListAsync();
-        
 
+            foreach(Actor actor in actors) 
+            {
+                addBase64ToActor(actor);
+            }
+
+            return actors;
+        }
         public async Task Update(Actor actor)
         {
             try
@@ -57,6 +72,23 @@ namespace MovieApp.Server.Repositories
             {
                 throw;
             }
+        }
+
+        private Actor addBase64ToActor(Actor actor)
+        {
+            var filePath = Path.Combine(env.WebRootPath, "images", actor.Picture);
+
+            if (!File.Exists(filePath))
+            {
+                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+            }
+
+            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            actor.Picture = base64String;
+            return actor;
         }
     }
 }

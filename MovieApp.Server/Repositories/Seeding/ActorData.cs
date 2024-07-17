@@ -58,7 +58,7 @@ namespace MovieApp.Server.Repositories.Seeding
                 Name = "Ana De Armas",
                 DateOfBirth = new DateOnly(1988, 4, 30),
                 Bio = "Ana Celia de Armas Caso (Spanish pronunciation: [ˈana ˈselya ðe ˈaɾmas ˈkaso]; born 30 April 1988) is a Cuban and Spanish actress. She began her career in Cuba with a leading role in the romantic drama Una rosa de Francia (2006). At the age of 18, she moved to Madrid, Spain, and starred in the popular drama El Internado for six seasons from 2007 to 2010.",
-                Picture = "anadearmas.jpeg",
+                Picture = "anadearmas.png",
                 Location = "Hollywood",
                 Nationality = "USA"
             },
@@ -69,7 +69,7 @@ namespace MovieApp.Server.Repositories.Seeding
                 Name = "Harrison Ford",
                 DateOfBirth = new DateOnly(1942, 7, 13),
                 Bio = "Harrison Ford (born July 13, 1942) is an American actor. He has been a leading man in films of several genres, and is regarded as an American cultural icon.[1] His films have grossed more than $5.4 billion in North America and more than $9.3 billion worldwide.[2][3][4] Ford is the recipient of various accolades, including the AFI Life Achievement Award, the Cecil B. DeMille Award, an Honorary César, and an Honorary Palme d'Or, in addition to an Academy Award nomination.[5][6]",
-                Picture = "harissonford.jpeg",
+                Picture = "harrisonford.jpeg",
                 Location = "Wyoming",
                 Nationality = "USA"
             },
@@ -102,7 +102,7 @@ namespace MovieApp.Server.Repositories.Seeding
                 Name = "Alex Wolff",
                 DateOfBirth = new DateOnly(1997, 11, 1),
                 Bio = "Alex Wolff, an award-winning actor, musician, singer, and composer, was born on November 1, 1997 in New York, New York. He is the son of actress Polly Draper and jazz pianist Michael Wolff. His elder brother is actor and musician Nat Wolff.\r\n\r\nHe is most known for his work on The Naked Brothers Band (2007), Mr. Troop Mom (2008), In Treatment (2008), HairBrained (2013), Stella's Last Weekend (2018), Patriots Day (2016), Hereditary (2018), Jumanji: The Next Level (2019), and The Cat and the Moon (2019).",
-                Picture = "alexwolff.jpeg",
+                Picture = "alexwolff.jpg",
                 Location = "New York",
                 Nationality = "USA",
             }

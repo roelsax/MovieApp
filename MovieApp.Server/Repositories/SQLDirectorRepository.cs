@@ -1,14 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieApp.Server.Models;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MovieApp.Server.Repositories
 {
     public class SQLDirectorRepository : IDirectorRepository
     {
         private readonly MovieAppContext context;
-        public SQLDirectorRepository(MovieAppContext context)
+        private readonly IWebHostEnvironment env;
+
+        public SQLDirectorRepository(MovieAppContext context, IWebHostEnvironment env)
         {
             this.context = context;
+            this.env = env;
         }
 
         public async Task Add(Director director)
@@ -30,13 +36,32 @@ namespace MovieApp.Server.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<Director?> Get(int directorId) =>
-            await context.Directors.FindAsync(directorId);
-        
+        public async Task<Director?> Get(int directorId) 
+        {
+            var director = await context.Directors
+                .Where(d => d.DirectorId == directorId)
+                .Include(d => d.Movies)
+                .FirstOrDefaultAsync();
 
-        public async Task<IEnumerable<Director>> GetAll() => await context.Directors.AsNoTracking().ToListAsync();
-        
+            addBase64ToDirector(director);
 
+            return director;
+        }
+       
+        public async Task<IEnumerable<Director>> GetAll()
+        {
+            var directors =  await context.Directors
+                .Include(d => d.Movies)
+                .AsNoTracking()
+                .ToListAsync();
+
+            foreach (Director director in directors) 
+            {
+                addBase64ToDirector(director);
+            }
+            
+            return directors;
+        }
         public async Task Update(Director director)
         {
             try
@@ -47,6 +72,23 @@ namespace MovieApp.Server.Repositories
             {
                 throw;
             }
+        }
+
+        private Director addBase64ToDirector(Director director)
+        {
+            var filePath = Path.Combine(env.WebRootPath, "images", director.Picture);
+
+            if (!File.Exists(filePath))
+            {
+                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+            }
+
+            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            director.Picture = base64String;
+            return director;
         }
     }
 }

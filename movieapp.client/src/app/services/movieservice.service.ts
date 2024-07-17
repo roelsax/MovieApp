@@ -14,13 +14,10 @@ export class MovieService {
   apiUrl = "https://localhost:7258/movies/";
   constructor(private http: HttpClient) { }
 
-  //public getMovies(): Observable<Movie[]> {
-  //  return this.http.get<Movie[]>(this.apiUrl)
-  //}
+  
   public getMovies(): Observable<Movie[]> {
     return this.http.get<any>(this.apiUrl).pipe(
       map(response => {
-        // Transform the response to extract movies from $values and flatten the structure
         return response.$values.map((movie: any) => ({
           movieId: movie.movieId,
           name: movie.name,

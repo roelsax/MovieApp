@@ -1,3 +1,5 @@
+import { Movie } from "./movie";
+
 export interface Actor {
   actorId: number;
   name: string;
@@ -6,4 +8,5 @@ export interface Actor {
   nationality: string;
   bio: string;
   picture: string;
+  movies: Movie[];
 }
