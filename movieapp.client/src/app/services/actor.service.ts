@@ -15,9 +15,8 @@ export class ActorService {
   {
     return this.http.get<any>(this.apiUrl).pipe(
       map(response => {
-        console.log(response);
-        const data =  response.$values.map((actor: any) => ({
-          directorId: actor.actorId,
+        const data = response.$values.map((actor: any) => ({
+          actorId: actor.actorId,
           name: actor.name,
           dateOfBirth: actor.dateOfBirth,
           location: actor.location,
@@ -26,7 +25,6 @@ export class ActorService {
           picture: actor.picture,
           movies: actor.actorMovies.$values.map((actorMovieRef: any) => actorMovieRef.movie)
         }));
-        console.log(data);
         return data;
       })
     )

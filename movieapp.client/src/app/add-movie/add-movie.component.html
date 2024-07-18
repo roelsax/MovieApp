@@ -6,39 +6,89 @@
     <input type="text"
            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
            formControlName="name">
-    
+
   </div>
   <div class="mb-3 datepicker-div">
     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Release date</label>
-    <input placeholder="MM/DD/YYYY" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" matInput formControlName="release_date" [matDatepicker]="picker">
-    
+    <input placeholder="MM/DD/YYYY" formControlName="release_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" matInput formControlName="release_date" [matDatepicker]="picker">
+
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
-    
+
 
 
   </div>
   <div class="mb-3">
-    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Message</label>
+    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
     <textarea class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               rows="3"
-              formControlName=""></textarea>
-    
+              formControlName="description"></textarea>
+
   </div>
 
   <div class="mb-3">
     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image</label>
-    <input type="file" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+    <input formControlName="picture" type="file" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
   </div>
 
   <div class="mb-3">
+    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Director</label>
+    <input type="text"
+           class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+           placeholder="search for director"
+           [(ngModel)]="directorString"
+           [ngModelOptions]="{standalone: true}"
+           (keyup)="searchDirectors()"
+           (keyup.backspace)="directorString = ''; openDirectorDialog = false;" />
 
+    <ul id="directorDialog" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        *ngIf="openDirectorDialog">
+      <li *ngFor="let director of directorSearchResults" class="mb-3">
+        <a href="#" (click)="$event.preventDefault(); selectDirector(director)">{{ director.name }}</a>
+      </li>
+      <hr *ngIf="directorSearchResults.length > 0" />
+      <li class="mt-2">
+        <a href="">Add new Director</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="mb-3">
+    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Actors</label>
+    <div *ngIf="movieForm.controls['actors'].value.length > 0">
+      <span>Selected actors:</span>
+      <div class="flex" *ngFor="let actor of actorsArray.controls; let i = index;">
+        {{ actor.value.name }}
+        <span>
+          <svg (click)="removeActor(i)" class="h-6 w-6 cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </span>
+      </div>
+    </div>
+    <input type="text"
+           class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+           placeholder="search for actors"
+           [(ngModel)]="actorString"
+           [ngModelOptions]="{standalone: true}"
+           (keyup)="searchActors()"
+           (keyup.backspace)="actorString = ''; openActorDialog = false;" />
+
+    <ul id="actorDialog" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        *ngIf="openActorDialog">
+      <li *ngFor="let actor of actorSearchResults" class="mb-3">
+        <a href="#" (click)="$event.preventDefault(); selectActor(actor)">{{ actor.name }}</a>
+      </li>
+      <hr *ngIf="actorSearchResults.length > 0" />
+      <li class="mt-2">
+        <a href="">Add new Actor</a>
+      </li>
+    </ul>
   </div>
 
   <div class="mb-3">
     <button type="submit"
             class="btn btn-primary">
-            
       Submit
     </button>
   </div>
