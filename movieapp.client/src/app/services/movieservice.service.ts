@@ -43,4 +43,17 @@ export class MovieService {
   public getMovie(id: number): Observable<Movie> {
     return this.http.get<Movie>(`${this.apiUrl}${id}`)
   }
+
+  public addMovie(movie: any, onSuccess: () => void): void {
+    this.http.post(`${this.apiUrl}create`, movie)
+      .subscribe((res) => {
+        onSuccess();
+      })
+  }
+
+
+  public getGenres(): Observable<string[]>
+  {
+    return this.http.get<any>(`${this.apiUrl}genres`);
+  }
 }

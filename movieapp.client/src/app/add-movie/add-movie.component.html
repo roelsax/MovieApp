@@ -14,9 +14,6 @@
 
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
-
-
-
   </div>
   <div class="mb-3">
     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
@@ -28,7 +25,12 @@
 
   <div class="mb-3">
     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image</label>
-    <input formControlName="picture" type="file" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+    <input
+           
+           type="file"
+           class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+           (change)="onFileChange($event)">
+          
   </div>
 
   <div class="mb-3">
@@ -87,9 +89,32 @@
   </div>
 
   <div class="mb-3">
-    <button type="submit"
-            class="btn btn-primary">
-      Submit
-    </button>
-  </div>
+      <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Genres</label>
+      <div *ngIf="movieForm.controls['genres'].value.length > 0">
+        <span>Selected genres:</span>
+        <div class="flex" *ngFor="let genre of genresArray.controls; let i = index;">
+          {{ genre.value.name }}
+          <span>
+            <svg (click)="removeGenre(i)" class="h-6 w-6 cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <select
+          class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          [(ngModel)]="selectedGenre"
+          [ngModelOptions]="{standalone: true}"
+          (change)="selectGenre($event)"
+            >
+          <option value="">Select a genre</option>
+          <option *ngFor="let genre of genres; let i = index" [value]="i">{{ genre }}</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <button type="submit"
+              class="btn btn-primary">
+        Submit
+      </button>
+    </div>
 </form>

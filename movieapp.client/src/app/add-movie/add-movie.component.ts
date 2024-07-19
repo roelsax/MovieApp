@@ -10,6 +10,8 @@ import { Director } from '../models/director';
 import { Actor } from '../models/actor';
 import { ActorService } from '../services/actor.service';
 import { CommonModule } from '@angular/common';
+import { MovieService } from '../services/movieservice.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'add-movie',
@@ -27,21 +29,25 @@ import { CommonModule } from '@angular/common';
   templateUrl: './add-movie.component.html',
   styleUrl: './add-movie.component.css'
 })
-export class AddMovieComponent implements OnInit{
+export class AddMovieComponent implements OnInit {
   public directors: Director[] = [];
   public actors: Actor[] = [];
   openDirectorDialog = false;
   openActorDialog = false;
   directorString = '';
   actorString = '';
+  selectedGenre = '';
   directorSearchResults: Director[] = [];
   actorSearchResults: Actor[] = [];
   movieForm: FormGroup;
+  genres: string[] = [];
 
   constructor(
     private directorService: DirectorService,
     private actorService: ActorService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private movieService: MovieService,
+    private router: Router
   ) {
     this.movieForm = this.formBuilder.group({
       name: new FormControl(''),
@@ -50,7 +56,7 @@ export class AddMovieComponent implements OnInit{
       picture: new FormControl(null),
       directorId: new FormControl<number | null>(null),
       actors: this.formBuilder.array([]),
-      genres: new FormControl([])
+      genres: this.formBuilder.array([]),
     });
   }
   ngOnInit(): void {
@@ -61,10 +67,35 @@ export class AddMovieComponent implements OnInit{
     this.actorService
       .getActors()
       .subscribe((result: Actor[]) => (this.actors = result));
-    }
+
+    this.movieService
+      .getGenres()
+      .subscribe((result: string[]) => (this.genres = result));
+  }
 
   get actorsArray(): FormArray {
     return this.movieForm.get('actors') as FormArray;
+  }
+
+  get genresArray(): FormArray {
+    return this.movieForm.get('genres') as FormArray;
+  }
+
+  onFileChange(event: any) {
+    if (event.target.files.length > 0) {
+      const uploadedFile = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.readAsDataURL(uploadedFile);
+      reader.onload = () => {
+        this.movieForm.patchValue({
+          picture: {
+            name: uploadedFile.name,
+            image: reader.result
+          }
+        });
+      };
+    }
   }
 
   searchDirectors() {
@@ -81,7 +112,11 @@ export class AddMovieComponent implements OnInit{
     this.actorsArray.removeAt(index);
   }
 
-  filterName(searchString: string,fullName: string) {
+  removeGenre(index: number) {
+    this.genresArray.removeAt(index);
+  }
+
+  filterName(searchString: string, fullName: string) {
     const splitName = fullName.split(" ");
 
     return splitName[0].toLowerCase().startsWith(searchString) || splitName[1].toLowerCase().startsWith(searchString);
@@ -106,7 +141,48 @@ export class AddMovieComponent implements OnInit{
     this.openActorDialog = false;
   }
 
+  selectGenre(event: any) {
+    const genre = this.genres[event.target.value];
+    const actorControl = new FormGroup({
+      id: new FormControl(event.target.value),
+      name: new FormControl(genre)
+    });
+
+    const genresArray = this.movieForm.controls['genres'] as FormArray;
+    genresArray.push(actorControl);
+    this.selectedGenre = '';
+  }
+
   submitForm() {
-    console.log(this.movieForm.value);
+    const form = this.movieForm.value;
+
+    let movie: {
+      name: string;
+      releaseDate: string;
+      description: string | null;
+      picture: File | null;
+      directorId: number | null;
+      genres: { id: number, name: string }[];
+      actors: { id: number, name: string }[];
+    } = {
+      name: form.name,
+      releaseDate: form.release_date,
+      description: form.description,
+      picture: this.movieForm.get('picture')?.value,
+      directorId: form.directorId,
+      genres: [],
+      actors: []
+    }
+
+    form.actors.forEach((actor: any) => {
+      movie.actors.push(actor);
+    })
+
+    form.genres.forEach((genre: any) => {
+      movie.genres.push(genre);
+    })
+    this.movieService.addMovie(movie, () => {
+      this.router.navigate(['/movies']);
+    })
   }
 }
