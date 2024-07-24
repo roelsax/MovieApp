@@ -1,5 +1,6 @@
 ﻿using MovieApp.Server.Repositories.Seeding;
 using MovieApp.Server.Models;
+using System.Text.Json.Serialization;
 namespace MovieApp.Server.DTOs
 {
     public class MovieDTO
@@ -11,6 +12,7 @@ namespace MovieApp.Server.DTOs
         public string Picture { get; set; }
         public Director Director { get; set; }
         public List<string> Genres { get; set; }
-        public List<Actor> Actors { get; set; }
+        public List<ActorMovieDTO> Actors { get; set; }
+        
     }
 }

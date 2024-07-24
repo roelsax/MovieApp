@@ -2,6 +2,8 @@
 using MovieApp.Server.Services;
 using MovieApp.Server.Models;
 using Microsoft.EntityFrameworkCore;
+using MovieApp.Server.DTOs;
+using System.IO;
 
 namespace MovieApp.Server.Controllers
 {
@@ -15,14 +17,34 @@ namespace MovieApp.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> FindById(int id) => await actorService.FindActor(id) is Actor actor ? base.Ok(actor) : base.NotFound();
 
-        [HttpPost]
-        public async Task<ActionResult> Create(Actor actor)
+        [HttpPost("create")]
+        public async Task<ActionResult> Create([FromForm] ActorCreateDTO actor)
         {
+            if (!DateTimeOffset.TryParse(actor.DateOfBirth, out var dateTimeOffset))
+            {
+                return BadRequest("Invalid date format.");
+            }
+
+            Actor newActor = new Actor()
+            {
+                Name = actor.Name,
+                DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime),
+                Bio = actor.Bio,
+                Location = actor.Location,
+                Nationality = actor.Nationality,
+            };
+
+            if (actor.Picture != null)
+            {
+                newActor.Picture = actor.Picture.FileName;
+                savePicture(actor.Picture);
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await actorService.Create(actor);
+                    await actorService.Create(newActor);
                     return base.Ok();
                 }
                 catch (DbUpdateException)
@@ -73,6 +95,21 @@ namespace MovieApp.Server.Controllers
 
             await actorService.Remove(id);
             return base.Ok();
+        }
+
+        private async void savePicture(IFormFile file)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", file.FileName);
+
+            if (!Directory.Exists("images"))
+            {
+                Directory.CreateDirectory("images");
+            }
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
         }
     }
 }

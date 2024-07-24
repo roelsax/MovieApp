@@ -28,6 +28,13 @@ export class DirectorService {
     )
   }
 
+  public addDirector(director: any, onSuccess: () => void): void {
+    this.http.post(`${this.apiUrl}create`, director)
+      .subscribe((res) => {
+        onSuccess();
+      })
+  }
+
   public getDirector(id: number): Observable<Director> {
     return this.http.get<Director>(`${this.apiUrl}${id}`)
   }

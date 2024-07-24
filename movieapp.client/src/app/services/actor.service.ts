@@ -30,6 +30,13 @@ export class ActorService {
     )
   }
 
+  public addActor(actor: any, onSuccess: () => void): void {
+    this.http.post(`${this.apiUrl}create`, actor)
+      .subscribe((res) => {
+        onSuccess();
+      })
+  }
+
   public getActor(id: number): Observable<Actor> {
     return this.http.get<Actor>(`${this.apiUrl}${id}`)
   }

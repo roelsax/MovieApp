@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NavLayoutComponent } from './nav-layout-component.component';
+import { AddDirectorComponent } from './add-director.component';
 
-describe('NavLayoutComponentComponent', () => {
-  let component: NavLayoutComponent;
-  let fixture: ComponentFixture<NavLayoutComponent>;
+describe('AddDirectorComponent', () => {
+  let component: AddDirectorComponent;
+  let fixture: ComponentFixture<AddDirectorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NavLayoutComponent]
+      declarations: [AddDirectorComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(NavLayoutComponent);
+    fixture = TestBed.createComponent(AddDirectorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

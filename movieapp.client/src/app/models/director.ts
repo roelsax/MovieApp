@@ -8,5 +8,5 @@ export interface Director {
   nationality: string;
   bio: string;
   picture: string;
-  movies: Movie[];
+  movies: any;
 }

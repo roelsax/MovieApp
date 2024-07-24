@@ -8,5 +8,5 @@ export interface Actor {
   nationality: string;
   bio: string;
   picture: string;
-  movies: Movie[];
+  actorMovies: any;
 }

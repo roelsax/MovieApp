@@ -45,6 +45,15 @@ namespace MovieApp.Server.Repositories
             .ThenInclude(am => am.Actor)
             .FirstOrDefaultAsync();
 
+            //List<string> genres = new List<string>();   
+
+            //foreach(var genre in movie.Genres)
+            //{
+            //    genres.Add(Enum.GetName(typeof(Genre), genre));
+            //}
+
+            //movie.GenresString = genres;
+
             addBase64ToMovie(movie);
 
             return movie;
@@ -82,7 +91,13 @@ namespace MovieApp.Server.Repositories
 
         private Movie addBase64ToMovie(Movie movie)
         {
-
+            if (movie.ActorMovies.Any())
+            {
+                foreach(ActorMovie actorMovie in  movie.ActorMovies)
+                {
+                    addBase64ToActorMovie(actorMovie);
+                }
+            }
             var filePath = Path.Combine(env.WebRootPath, "images", movie.Picture);
 
             if (!File.Exists(filePath))
@@ -96,6 +111,23 @@ namespace MovieApp.Server.Repositories
             movie.Picture = base64String;
 
             return movie;
+        }
+
+        private ActorMovie addBase64ToActorMovie(ActorMovie actorMovie)
+        {
+            var filePath = Path.Combine(env.WebRootPath, "images", actorMovie.Actor.Picture);
+
+            if (!File.Exists(filePath))
+            {
+                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+            }
+
+            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            actorMovie.Actor.Picture = base64String;
+
+            return actorMovie;
         }
     }
 }

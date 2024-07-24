@@ -7,12 +7,13 @@ import { AppComponent } from './app.component';
 import { NavLayoutComponent } from './nav-layout-component/nav-layout-component.component';
 import { RouterModule } from '@angular/router';
 import { MovieComponent } from './movie/movie.component';
-import { AddMovieComponent } from './add-movie/add-movie.component';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
+
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { DirectorsComponent } from './directors/directors.component';
 import { ActorsComponent } from './actors/actors.component';
+import { DirectorDetailComponent } from './director-detail/director-detail.component';
+import { ActorDetailComponent } from './actor-detail/actor-detail.component';
+import { MovieDetailComponent } from './movie-detail/movie-detail.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,9 @@ import { ActorsComponent } from './actors/actors.component';
     MovieComponent,
     DirectorsComponent,
     ActorsComponent,
-    
+    DirectorDetailComponent,
+    ActorDetailComponent,
+    MovieDetailComponent
   ],
   imports: [
     RouterModule,

@@ -1,5 +1,6 @@
 import { Director } from "./director";
 import { Actor } from "./actor";
+
 export interface Movie {
   movieId: number;
   name: string;
@@ -7,6 +8,7 @@ export interface Movie {
   description: string;
   picture: string;
   director: Director;
-  genres: string[];
-  actors: Actor[];
+  genres: any;
+  genreDtos: any;
+  actors: any;
 }

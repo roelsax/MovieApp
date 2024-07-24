@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieApp.Server.DTOs;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using MovieApp.Server.Repositories.Seeding;
 
 namespace MovieApp.Server.Controllers
 {
@@ -32,16 +33,51 @@ namespace MovieApp.Server.Controllers
                         Director = movie.Director,
                         Picture = movie.Picture,
                         Genres = movie.Genres.Select(g => g.ToString()).ToList(),
-                        Actors = movie.ActorMovies.Select(am => am.Actor).ToList(),
+                        Actors = movie.ActorMovies.Select(am => new ActorMovieDTO
+                        {
+                            ActorId = am.Actor.ActorId,
+                            Name = am.Actor.Name
+
+                        }).ToList(),
                     }
                 );
             }
 
             return base.Ok(moviesMapped);
-        } 
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> FindById(int id) => await movieService.FindMovie(id) is Movie movie ? base.Ok(movie) : base.NotFound();
+        public async Task<ActionResult> FindById(int id) 
+        {
+            var movie = await movieService.FindMovie(id);
+
+            if (movie == null)
+            {
+                return base.NotFound();
+            }
+
+         
+            MovieDTO movieMapped = new MovieDTO
+            {
+                MovieId = movie.MovieId,
+                Name = movie.Name,
+                ReleaseDate = movie.ReleaseDate,
+                Description = movie.Description,
+                Director = movie.Director,
+                Picture = movie.Picture,
+                Genres = movie.Genres.Select(g => g.ToString()).ToList(),
+                Actors = movie.ActorMovies.Select(am => new ActorMovieDTO
+                {
+                    ActorId = am.Actor.ActorId,
+                    Name = am.Actor.Name,
+                    Picture = am.Actor.Picture
+                    
+                }).ToList(),
+
+            };
+
+            return base.Ok(movieMapped);
+        }  
 
         [HttpPost("create")]
         public async Task<ActionResult> Create([FromBody] JsonElement movieJson)

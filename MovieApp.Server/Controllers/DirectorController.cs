@@ -2,6 +2,7 @@
 using MovieApp.Server.Services;
 using MovieApp.Server.Models;
 using Microsoft.EntityFrameworkCore;
+using MovieApp.Server.DTOs;
 
 namespace MovieApp.Server.Controllers
 {
@@ -15,14 +16,34 @@ namespace MovieApp.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> FindById(int id) => await directorService.FindDirector(id) is Director director ? base.Ok(director) : base.NotFound();
 
-        [HttpPost]
-        public async Task<ActionResult> Create(Director director)
+        [HttpPost("create")]
+        public async Task<ActionResult> Create([FromForm] DirectorCreateDto director)
         {
+            if (!DateTimeOffset.TryParse(director.DateOfBirth, out var dateTimeOffset))
+            {
+                return BadRequest("Invalid date format.");
+            }
+
+            Director newDirector = new Director()
+            {
+                Name = director.Name,
+                DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime),
+                Bio = director.Bio,
+                Location = director.Location,
+                Nationality = director.Nationality,
+            };
+
+            if (director.Picture != null)
+            {
+                newDirector.Picture = director.Picture.FileName;
+                savePicture(director.Picture);
+            }
+            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await directorService.Create(director);
+                    await directorService.Create(newDirector);
                     return base.Ok();
                 }
                 catch (DbUpdateException)
@@ -33,10 +54,10 @@ namespace MovieApp.Server.Controllers
                 {
                     return base.Problem();
                 }
-
             }
             return base.BadRequest(ModelState);
         }
+
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, Director director)
         {
@@ -72,6 +93,21 @@ namespace MovieApp.Server.Controllers
 
             await directorService.Remove(id);
             return base.Ok();
+        }
+
+        private async void savePicture(IFormFile file)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", file.FileName);
+
+            if (!Directory.Exists("images"))
+            {
+                Directory.CreateDirectory("images");
+            }
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
         }
     }
 }

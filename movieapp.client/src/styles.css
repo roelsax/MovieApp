@@ -5,3 +5,14 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.datepicker-div {
+  position: relative;
+}
+
+
+.mat-datepicker-toggle {
+  position: absolute;
+  top: 25px;
+  right: 0px;
+}

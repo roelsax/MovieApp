@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NavLayoutComponent } from './nav-layout-component.component';
+import { AddActorComponent } from './add-actor.component';
 
-describe('NavLayoutComponentComponent', () => {
-  let component: NavLayoutComponent;
-  let fixture: ComponentFixture<NavLayoutComponent>;
+describe('AddActorComponent', () => {
+  let component: AddActorComponent;
+  let fixture: ComponentFixture<AddActorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [NavLayoutComponent]
+      declarations: [AddActorComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(NavLayoutComponent);
+    fixture = TestBed.createComponent(AddActorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

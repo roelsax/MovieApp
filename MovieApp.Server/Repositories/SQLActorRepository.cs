@@ -44,6 +44,11 @@ namespace MovieApp.Server.Repositories
 
             addBase64ToActor(actor);
 
+            foreach(ActorMovie actorMovie in actor.ActorMovies)
+            {
+                addBase64ToActorMovies(actorMovie);
+            }
+
             return actor;
         }
        
@@ -89,6 +94,23 @@ namespace MovieApp.Server.Repositories
 
             actor.Picture = base64String;
             return actor;
+        }
+
+        private ActorMovie addBase64ToActorMovies(ActorMovie actorMovie)
+        {
+            var filePath = Path.Combine(env.WebRootPath, "images", actorMovie.Movie.Picture);
+
+            if (!File.Exists(filePath))
+            {
+                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+            }
+
+            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            actorMovie.Movie.Picture = base64String;
+            return actorMovie;
         }
     }
 }
