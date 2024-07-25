@@ -1,7 +1,7 @@
 <div *ngIf="movie; else movieNotFoundTemplate">
-  <h1 class="mb-5 text-2xl">{{ movie.name }}</h1>
+  <h1 class="mb-5 text-2xl font-medium text-gray-500">{{ movie.name }}</h1>
 
-  <div class="border-t border-gray-200 p-4">
+  <div class="border-t border-gray-200 p-4 flex gap-3">
     <div>
       <dt class="text-sm font-medium text-gray-500">
 
@@ -10,81 +10,83 @@
         <img width="300" src="data:image/png;base64,{{movie.picture}}" />
       </dd>
     </div>
+    <div class="movie-info text-left">
+      <div class="mb-3">
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Title
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{movie.name}}
+        </dd>
+      </div>
 
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Title
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        {{movie.name}}
-      </dd>
+      <div class="mb-3">
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Release date
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{movie.releaseDate}}
+        </dd>
+      </div>
+
+      <div class="mb-3">
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Cast
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <span *ngFor="let actor of movie.actors.$values">
+            <a class="underline" routerLink="/actor/{{actor.actorId}}">{{actor.name}}</a>&nbsp;
+          </span>
+        </dd>
+      </div>
+
+      <div class="mb-3">
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Genre
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <ul>
+
+            <li *ngFor="let genre of movie.genres.$values">
+              {{genre}}
+            </li>
+          </ul>
+
+        </dd>
+      </div>
+
+      <div class="mb-3">
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Description
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{movie.description}}
+        </dd>
+      </div>
+
+      <div class="mb-3">
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Director
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <a class="underline" routerLink="/director/{{movie.director.directorId}}">
+            {{movie.director.name}}
+          </a>
+        </dd>
+      </div>
     </div>
-
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Release date
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        {{movie.releaseDate}}
-      </dd>
-    </div>
-
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Cast
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        <span *ngFor="let actor of movie.actors.$values">
-          <a routerLink="/actor/{{actor.actorId}}">{{actor.name}} </a> 
-        </span>
-      </dd>
-    </div>
-
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Genre
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        <ul>
-
-          <li *ngFor="let genre of movie.genres.$values">
-            {{genre}}
-          </li>
-        </ul>
-
-      </dd>
-    </div>
-    <div>
-
-      <dt class="text-sm font-medium text-gray-500">
-        Description
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        {{movie.description}}
-      </dd>
-    </div>
-
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Director
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        <a routerLink="/director/{{movie.director.directorId}}">
-          {{movie.director.name}}
-        </a>
-      </dd>
-    </div>
+    
 
   </div>
   <div>
-    <h2>Cast of {{ movie.name }}</h2>
+    <h2 class="font-medium text-gray-500 text-2xl">Cast of {{ movie.name }}</h2>
     <div class="border-t border-gray-200 p-4 grid grid-cols-5">
       <a routerLink="/actor/{{actor.actorId}}" class="movie flex flex-col" *ngFor="let actor of movie.actors.$values">
 
         <div class="self-center">
           <img class="rounded-sm" width="150" src="data:image/png;base64,{{actor.picture}}" />
         </div>
-        <div class="title">
+        <div class="title text-gray-500 font-medium">
           {{ actor.name }}
         </div>
       </a>

@@ -1,70 +1,72 @@
 <div *ngIf="actor; else actorNotFoundTemplate">
-  <h1 class="mb-5 text-2xl">{{ actor.name }}</h1>
+  <h1 class="mb-5 text-2xl font-medium text-gray-500">{{ actor.name }}</h1>
 
-  <div class="border-t border-gray-200 p-4">
+  <div class="border-t border-gray-200 p-4 flex gap-3">
     <div>
       <dt class="text-sm font-medium text-gray-500">
 
       </dt>
       <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        <img width="300" src="data:image/png;base64,{{actor.picture}}" />
+        <img class="actor-image" src="data:image/png;base64,{{actor.picture}}" />
       </dd>
     </div>
+    <div class="text-left">
+      <div>
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Full name
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{actor.name}}
+        </dd>
+      </div>
 
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Full name
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        {{actor.name}}
-      </dd>
-    </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Date of birth
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{actor.dateOfBirth}}
+        </dd>
+      </div>
 
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Date of birth
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        {{actor.dateOfBirth}}
-      </dd>
-    </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Nationality
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{actor.nationality}}
+        </dd>
+      </div>
 
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Nationality
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        {{actor.nationality}}
-      </dd>
-    </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Location
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{actor.location}}
+        </dd>
+      </div>
 
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Location
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        {{actor.location}}
-      </dd>
+      <div>
+        <dt class="text-sm font-medium text-gray-500 text-lg">
+          Bio
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          {{actor.bio}}
+        </dd>
+      </div>
     </div>
-
-    <div>
-      <dt class="text-sm font-medium text-gray-500">
-        Bio
-      </dt>
-      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        {{actor.bio}}
-      </dd>
-    </div>
+    
   </div>
   <div>
-    <h2>Movies starring {{ actor.name }}</h2>
+    <h2 class="font-medium text-gray-500 text-2xl">Movies starring {{ actor.name }}</h2>
     <div class="border-t border-gray-200 p-4 grid grid-cols-5">
       <a routerLink="/movie/{{item.movie.movieId}}" class="movie flex flex-col" *ngFor="let item of actor.actorMovies.$values">
 
         <div class="self-center">
           <img class="rounded-sm" width="150" src="data:image/png;base64,{{item.movie.picture}}" />
         </div>
-        <div class="title">
+        <div class="title text-gray-500 font-medium">
           {{ item.movie.name }}
         </div>
       </a>

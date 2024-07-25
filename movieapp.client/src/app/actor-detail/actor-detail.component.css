@@ -1,0 +1,6 @@
+.actor-image {
+    height: unset;
+    max-width: unset;
+    width: 300px;
+    border-radius: 5px;
+}

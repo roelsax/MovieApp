@@ -10,6 +10,7 @@ import { Router, NavigationEnd } from '@angular/router';
 })
 export class MovieComponent implements OnInit {
   public movies: Movie[] = [];
+  genres: string[] = [];
 
   constructor(private router: Router, private movieService: MovieService) {
     router.events.subscribe((val) => {
@@ -25,5 +26,9 @@ export class MovieComponent implements OnInit {
     this.movieService
       .getMovies()
       .subscribe((result: Movie[]) => (this.movies = result));
+
+    this.movieService
+      .getGenres()
+      .subscribe((result: string[]) => (this.genres = result));
   }
 }

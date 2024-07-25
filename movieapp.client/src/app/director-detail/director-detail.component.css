@@ -1,0 +1,6 @@
+.director-image {
+    width: 300px !important;
+    max-width: unset;
+    height: unset;
+    border-radius: 5px;
+}
