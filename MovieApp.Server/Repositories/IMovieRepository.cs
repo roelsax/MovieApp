@@ -5,7 +5,7 @@ namespace MovieApp.Server.Repositories
 {
     public interface IMovieRepository
     {
-        public Task<IEnumerable<Movie>> GetAll();
+        public Task<IEnumerable<Movie>> GetAll(string? search, int? genre);
         public Task<Movie?> Get(int movieId);
         public Task Add(Movie movie);
         public Task Update(Movie movie);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Movie } from '../models/movie';
 import { Director } from '../models/director';
 import { Actor } from '../models/actor';
@@ -15,8 +15,12 @@ export class MovieService {
   constructor(private http: HttpClient) { }
 
   
-  public getMovies(): Observable<Movie[]> {
-    return this.http.get<any>(this.apiUrl).pipe(
+  public getMovies(searchString: string, genre: string): Observable<Movie[]> {
+    let params = new HttpParams();
+    if (searchString !== '') { params = params.append('search', searchString); }
+    if (genre !== "") { params = params.append('genre', genre); }
+    
+    return this.http.get<any>(this.apiUrl, { params: params }).pipe(
       map(response => {
         return response.$values.map((movie: any) => ({
           movieId: movie.movieId,
@@ -46,6 +50,13 @@ export class MovieService {
 
   public addMovie(movie: any, onSuccess: () => void): void {
     this.http.post(`${this.apiUrl}create`, movie)
+      .subscribe((res) => {
+        onSuccess();
+      })
+  }
+
+  public deleteMovie(id: number, onSuccess: () => void): void {
+    this.http.delete(`${this.apiUrl}delete/${id}`)
       .subscribe((res) => {
         onSuccess();
       })

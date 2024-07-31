@@ -15,9 +15,18 @@ namespace MovieApp.Server.Controllers
     public class MovieController(MovieService movieService) : Controller
     {
         [HttpGet]
-        public async Task<ActionResult> FindAll(){
+        public async Task<ActionResult> FindAll(string? search, string? genre){
 
-            var movies = await movieService.GetMovies();
+            int? genreInt;
+            if (genre != null)
+            {
+                genreInt = GetGenreValue(genre);
+            } else
+            {
+                genreInt = null;
+            }
+            
+            var movies = await movieService.GetMovies(search, genreInt);
 
             List<MovieDTO> moviesMapped = new List<MovieDTO>();
 
@@ -144,7 +153,7 @@ namespace MovieApp.Server.Controllers
             }
             return base.BadRequest(ModelState);
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             var movie = await movieService.FindMovie(id);
@@ -212,6 +221,18 @@ namespace MovieApp.Server.Controllers
 
                     newMovie.Genres.Add(genre);
                 }
+            }
+        }
+
+        private int GetGenreValue(string genreName)
+        {
+            if (Enum.TryParse(typeof(Genre), genreName, true, out var genre))
+            {
+                return (int)genre;
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid genre name: {genreName}");
             }
         }
     }

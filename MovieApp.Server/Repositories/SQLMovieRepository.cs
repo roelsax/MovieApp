@@ -45,35 +45,43 @@ namespace MovieApp.Server.Repositories
             .ThenInclude(am => am.Actor)
             .FirstOrDefaultAsync();
 
-            //List<string> genres = new List<string>();   
-
-            //foreach(var genre in movie.Genres)
-            //{
-            //    genres.Add(Enum.GetName(typeof(Genre), genre));
-            //}
-
-            //movie.GenresString = genres;
+            if (movie == null)
+            {
+                return null;
+            }
 
             addBase64ToMovie(movie);
 
             return movie;
         }
 
-        public async Task<IEnumerable<Movie>> GetAll()
+        public async Task<IEnumerable<Movie>> GetAll(string? search, int? genre)
         {
-            var movies = await context.Movies
-            .Include(m => m.Director)
-            .Include(m => m.ActorMovies)
-            .ThenInclude(am => am.Actor)
-            .AsNoTracking()
-            .ToListAsync();
+            var query = context.Movies
+                .Include(m => m.Director)
+                .Include(m => m.ActorMovies)
+                .ThenInclude(am => am.Actor)
+                .AsNoTracking()
+                .AsQueryable();
 
-            foreach(Movie movie in movies)
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(m => m.Name.StartsWith(search));
+            }
+
+            if (genre.HasValue && genre != -1)
+            {
+                query = query.Where(m => m.Genres.Contains((Genre)genre));
+            }
+
+            var movies = query.ToListAsync();
+
+            foreach (Movie movie in await movies)
             {
                 addBase64ToMovie(movie);
             }
 
-            return movies;
+            return await movies;
         }
 
         public async Task Update(Movie movie)

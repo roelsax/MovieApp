@@ -12,7 +12,7 @@ namespace MovieApp.Server.Services
             this.repository = repository;
         }
 
-        public async Task<IEnumerable<Movie>> GetMovies() => await repository.GetAll();
+        public async Task<IEnumerable<Movie>> GetMovies(string? search, int? genre) => await repository.GetAll(search, genre);
         public async Task<Movie?> FindMovie(int movieId) => await repository.Get(movieId);
         public async Task Create(Movie movie) => await repository.Add(movie);
         public async Task Update(Movie movie) => await repository.Update(movie);

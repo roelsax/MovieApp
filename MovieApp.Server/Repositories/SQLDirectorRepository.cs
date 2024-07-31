@@ -43,6 +43,12 @@ namespace MovieApp.Server.Repositories
                 .Include(d => d.Movies)
                 .FirstOrDefaultAsync();
 
+            if (director == null)
+            {
+                return null;
+            }
+
+
             addBase64ToDirector(director);
             foreach(Movie movie in director.Movies)
             {

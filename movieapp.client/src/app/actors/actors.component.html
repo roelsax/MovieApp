@@ -8,10 +8,10 @@
 
 <div class="grid grid-cols-5">
   <a routerLink="/actor/{{actor.actorId}}" class="movie flex flex-col" *ngFor="let actor of actors">
-    <div class="self-center">
+    <div class="self-center image-wrapper">
       <img class="rounded-sm" width="150" src="data:image/png;base64,{{ actor.picture}}" />
     </div>
-    <div class="title">
+    <div class="title text-gray-500 font-medium">
       {{ actor.name }}
     </div>
   </a>

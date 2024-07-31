@@ -3,6 +3,7 @@ using MovieApp.Server.Models;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MovieApp.Server.Repositories
 {
@@ -41,6 +42,12 @@ namespace MovieApp.Server.Repositories
                 .Include(a => a.ActorMovies)
                 .ThenInclude(am => am.Movie)
                 .FirstOrDefaultAsync();
+
+            if (actor == null)
+            {
+                return null;
+            }
+
 
             addBase64ToActor(actor);
 

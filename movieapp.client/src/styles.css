@@ -16,3 +16,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   top: 25px;
   right: 0px;
 }
+
+
+.image-wrapper {
+    height: 252px;
+    width: 170px;
+    border-radius: 0.125rem;
+    border: 1px solid black;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

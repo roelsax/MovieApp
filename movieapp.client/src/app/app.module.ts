@@ -14,6 +14,8 @@ import { ActorsComponent } from './actors/actors.component';
 import { DirectorDetailComponent } from './director-detail/director-detail.component';
 import { ActorDetailComponent } from './actor-detail/actor-detail.component';
 import { MovieDetailComponent } from './movie-detail/movie-detail.component';
+import { FormsModule } from '@angular/forms';
+import { DeleteConfirmationComponent } from './delete-confirmation/delete-confirmation.component';
 
 @NgModule({
   declarations: [
@@ -24,10 +26,11 @@ import { MovieDetailComponent } from './movie-detail/movie-detail.component';
     ActorsComponent,
     DirectorDetailComponent,
     ActorDetailComponent,
-    MovieDetailComponent
+    MovieDetailComponent,
+    DeleteConfirmationComponent
   ],
   imports: [
-    RouterModule,
+    RouterModule, FormsModule,
     BrowserModule, HttpClientModule,
     AppRoutingModule
   ],
