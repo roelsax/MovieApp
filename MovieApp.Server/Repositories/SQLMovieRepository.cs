@@ -33,9 +33,14 @@ namespace MovieApp.Server.Repositories
 
         public async Task Delete(int movieId)
         {
-            var movie = Get(movieId);
-            context.Remove(movie);
-            await context.SaveChangesAsync();
+            Movie movie = await context.Movies.Where(m => m.MovieId == movieId).FirstOrDefaultAsync();
+
+            if (movie != null)
+            {
+                context.Movies.Remove(movie);
+                await context.SaveChangesAsync();
+            }
+            
         }
 
         public async Task<Movie?> Get(int movieId) {

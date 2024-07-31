@@ -31,9 +31,15 @@ namespace MovieApp.Server.Repositories
 
         public async Task Delete(int directorId)
         {
-            var director = Get(directorId);
-            context.Remove(director);
-            await context.SaveChangesAsync();
+            var director = await context.Directors
+                .Where(d => d.DirectorId == directorId)
+                .FirstOrDefaultAsync();
+
+            if (director != null)
+            {
+                context.Directors.Remove(director);
+                await context.SaveChangesAsync();
+            }
         }
 
         public async Task<Director?> Get(int directorId) 

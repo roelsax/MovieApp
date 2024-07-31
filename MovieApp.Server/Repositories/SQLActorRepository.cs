@@ -32,9 +32,14 @@ namespace MovieApp.Server.Repositories
 
         public async Task Delete(int actorId)
         {
-            var actor = Get(actorId);
-            context.Remove(actor);
-            await context.SaveChangesAsync();
+            var actor = await context.Actors.Where(a => a.ActorId == actorId)
+                            .FirstOrDefaultAsync();
+
+            if (actor != null)
+            {
+                context.Actors.Remove(actor);
+                await context.SaveChangesAsync();
+            }
         }
 
         public async Task<Actor?> Get(int actorId) {
@@ -47,7 +52,6 @@ namespace MovieApp.Server.Repositories
             {
                 return null;
             }
-
 
             addBase64ToActor(actor);
 

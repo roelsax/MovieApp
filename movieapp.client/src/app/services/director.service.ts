@@ -35,6 +35,13 @@ export class DirectorService {
       })
   }
 
+  public deleteDirector(id: number, onSuccess: () => void): void {
+    this.http.delete(`${this.apiUrl}delete/${id}`)
+      .subscribe((res) => {
+        onSuccess();
+      })
+  }
+
   public getDirector(id: number): Observable<Director> {
     return this.http.get<Director>(`${this.apiUrl}${id}`)
   }

@@ -28,12 +28,20 @@ export class DeleteConfirmationComponent implements OnInit {
   }
 
   deleteModel(model: string, id: any) {
-    console.log(model);
     switch (model) {
       case 'movie':
-        console.log('inside movie');
         this.movieService.deleteMovie(id, () => {
           this.router.navigate(['/movies'])
+        })
+        break;
+      case 'director':
+        this.directorService.deleteDirector(id, () => {
+          this.router.navigate(['/directors'])
+        })
+        break;
+      case 'actor':
+        this.actorService.deleteActor(id, () => {
+          this.router.navigate(['/actors'])
         })
         break;
     }

@@ -81,7 +81,7 @@ namespace MovieApp.Server.Controllers
             return base.BadRequest(ModelState);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             var director = await directorService.FindDirector(id);

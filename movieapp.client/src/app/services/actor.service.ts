@@ -37,6 +37,13 @@ export class ActorService {
       })
   }
 
+  public deleteActor(id: number, onSuccess: () => void): void {
+    this.http.delete(`${this.apiUrl}delete/${id}`)
+      .subscribe((res) => {
+        onSuccess();
+      })
+  }
+
   public getActor(id: number): Observable<Actor> {
     return this.http.get<Actor>(`${this.apiUrl}${id}`)
   }
