@@ -7,7 +7,7 @@
         
       </dt>
       <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        <img class="director-image" src="data:image/png;base64,{{director.picture}}" />
+        <img class="director-image" src="data:image/png;base64,{{director.picture.base64}}" />
       </dd>
     </div>
     <div class="text-left">
@@ -74,7 +74,7 @@
       <a routerLink="/movie/{{item.movieId}}" class="movie flex flex-col" *ngFor="let item of director.movies.$values">
 
         <div class="self-center image-wrapper">
-          <img class="rounded-sm" width="150" src="data:image/png;base64,{{item.picture}}" />
+          <img class="rounded-sm" width="150" src="data:image/png;base64,{{item.picture.base64}}" />
         </div>
         <div class="title text-gray-500 font-medium">
           {{ item.name }}

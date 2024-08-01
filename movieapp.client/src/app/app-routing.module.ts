@@ -20,12 +20,15 @@ const routes: Routes = [
       { path: '', component: MovieComponent },
       { path: 'movies', component: MovieComponent },
       { path: 'add-movie', component: AddMovieComponent },
+      { path: 'edit/movie/:id', component: AddMovieComponent },
       { path: 'movie/:id', component: MovieDetailComponent },
       { path: 'directors', component: DirectorsComponent },
       { path: 'actors', component: ActorsComponent },
       { path: 'add-actor', component: AddActorComponent },
+      { path: 'edit/actor/:id', component: AddActorComponent },
       { path: 'actor/:id', component: ActorDetailComponent },
       { path: 'add-director', component: AddDirectorComponent },
+      { path: 'edit/director/:id', component: AddDirectorComponent },
       { path: 'director/:id', component: DirectorDetailComponent },
       { path: 'delete/:model/:id', component: DeleteConfirmationComponent }
     ]

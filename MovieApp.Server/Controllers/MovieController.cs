@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.DataProtection.Repositories;
-using MovieApp.Server.Models;
+﻿using MovieApp.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using MovieApp.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Server.DTOs;
 using System.Text.Json;
-using Microsoft.AspNetCore.Http;
-using MovieApp.Server.Repositories.Seeding;
+using System.IO;
+using System;
+
 
 namespace MovieApp.Server.Controllers
 {
     [Route("movies")]
     [ApiController]
-    public class MovieController(MovieService movieService) : Controller
+    public class MovieController(MovieService movieService, IWebHostEnvironment env) : Controller
     {
         [HttpGet]
         public async Task<ActionResult> FindAll(string? search, string? genre){
@@ -40,7 +40,10 @@ namespace MovieApp.Server.Controllers
                         ReleaseDate = movie.ReleaseDate,
                         Description = movie.Description,
                         Director = movie.Director,
-                        Picture = movie.Picture,
+                        Picture = new ImageDTO {
+                            ImagePath = movie.Picture.ImagePath,
+                            Base64 = getBase64(movie.Picture.ImagePath)
+                        },
                         Genres = movie.Genres.Select(g => g.ToString()).ToList(),
                         Actors = movie.ActorMovies.Select(am => new ActorMovieDTO
                         {
@@ -73,14 +76,21 @@ namespace MovieApp.Server.Controllers
                 ReleaseDate = movie.ReleaseDate,
                 Description = movie.Description,
                 Director = movie.Director,
-                Picture = movie.Picture,
+                Picture = new ImageDTO
+                {
+                    ImagePath = movie.Picture.ImagePath,
+                    Base64 = getBase64(movie.Picture.ImagePath)
+                },
                 Genres = movie.Genres.Select(g => g.ToString()).ToList(),
                 Actors = movie.ActorMovies.Select(am => new ActorMovieDTO
                 {
                     ActorId = am.Actor.ActorId,
                     Name = am.Actor.Name,
-                    Picture = am.Actor.Picture
-                    
+                    Picture = new ImageDTO {
+                        ImagePath = am.Actor.Picture.ImagePath,
+                        Base64 = getBase64(am.Actor.Picture.ImagePath)
+                    }
+
                 }).ToList(),
 
             };
@@ -98,16 +108,19 @@ namespace MovieApp.Server.Controllers
             {
                 Name = movieJson.GetProperty("name").GetString(),
                 ReleaseDate = DateOnly.FromDateTime(dateTime),
-                Picture = picture.GetProperty("name").ToString(),
+                Picture = new Image
+                {
+                    ImagePath = picture.GetProperty("name").ToString(),
+                },
                 DirectorId = movieJson.GetProperty("directorId").GetInt32(),
                 Description = movieJson.GetProperty("description").GetString(),
                 ActorMovies = new List<ActorMovie>(),
                 Genres = new List<Genre>()
             };
 
-            if (!string.IsNullOrEmpty(newMovie.Picture))
+            if (!string.IsNullOrEmpty(newMovie.Picture.ImagePath))
             {
-                savePicture(base64, newMovie.Picture);
+                savePicture(base64, newMovie.Picture.ImagePath);
             }
 
             addActors(movieJson, newMovie);
@@ -234,6 +247,22 @@ namespace MovieApp.Server.Controllers
             {
                 throw new ArgumentException($"Invalid genre name: {genreName}");
             }
+        }
+
+        private string getBase64(string path)
+        {
+            
+            var filePath = Path.Combine(env.WebRootPath, "images", path);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                filePath = Path.Combine(env.WebRootPath, "images", "dummy-image-square.jpg");
+            }
+
+            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            return base64String;
         }
     }
 }

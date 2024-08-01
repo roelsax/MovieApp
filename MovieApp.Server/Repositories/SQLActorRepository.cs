@@ -44,8 +44,10 @@ namespace MovieApp.Server.Repositories
 
         public async Task<Actor?> Get(int actorId) {
             var actor = await context.Actors.Where(a => a.ActorId == actorId)
+                .Include(a => a.Picture)
                 .Include(a => a.ActorMovies)
                 .ThenInclude(am => am.Movie)
+                .ThenInclude(am => am.Picture)
                 .FirstOrDefaultAsync();
 
             if (actor == null)
@@ -53,27 +55,29 @@ namespace MovieApp.Server.Repositories
                 return null;
             }
 
-            addBase64ToActor(actor);
+            //addBase64ToActor(actor);
 
-            foreach(ActorMovie actorMovie in actor.ActorMovies)
-            {
-                addBase64ToActorMovies(actorMovie);
-            }
+            //foreach(ActorMovie actorMovie in actor.ActorMovies)
+            //{
+            //    addBase64ToActorMovies(actorMovie);
+            //}
 
             return actor;
         }
        
         public async Task<IEnumerable<Actor>> GetActors() {
             var actors = await context.Actors
+            .Include(a => a.Picture)
             .Include(a => a.ActorMovies)
             .ThenInclude(am => am.Movie)
+            .ThenInclude(am => am.Picture)
             .AsNoTracking()
             .ToListAsync();
 
-            foreach(Actor actor in actors) 
-            {
-                addBase64ToActor(actor);
-            }
+            //foreach(Actor actor in actors) 
+            //{
+            //    addBase64ToActor(actor);
+            //}
 
             return actors;
         }
@@ -90,38 +94,38 @@ namespace MovieApp.Server.Repositories
             }
         }
 
-        private Actor addBase64ToActor(Actor actor)
-        {
-            var filePath = Path.Combine(env.WebRootPath, "images", actor.Picture);
+        //private Actor addBase64ToActor(Actor actor)
+        //{
+        //    var filePath = Path.Combine(env.WebRootPath, "images", actor.Picture);
 
-            if (!File.Exists(filePath))
-            {
-                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
-            }
+        //    if (!File.Exists(filePath))
+        //    {
+        //        filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+        //    }
 
-            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+        //    byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
 
-            string base64String = Convert.ToBase64String(imageBytes);
+        //    string base64String = Convert.ToBase64String(imageBytes);
 
-            actor.Picture = base64String;
-            return actor;
-        }
+        //    actor.Picture = base64String;
+        //    return actor;
+        //}
 
-        private ActorMovie addBase64ToActorMovies(ActorMovie actorMovie)
-        {
-            var filePath = Path.Combine(env.WebRootPath, "images", actorMovie.Movie.Picture);
+        //private ActorMovie addBase64ToActorMovies(ActorMovie actorMovie)
+        //{
+        //    var filePath = Path.Combine(env.WebRootPath, "images", actorMovie.Movie.Picture);
 
-            if (!File.Exists(filePath))
-            {
-                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
-            }
+        //    if (!File.Exists(filePath))
+        //    {
+        //        filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+        //    }
 
-            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+        //    byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
 
-            string base64String = Convert.ToBase64String(imageBytes);
+        //    string base64String = Convert.ToBase64String(imageBytes);
 
-            actorMovie.Movie.Picture = base64String;
-            return actorMovie;
-        }
+        //    actorMovie.Movie.Picture = base64String;
+        //    return actorMovie;
+        //}
     }
 }

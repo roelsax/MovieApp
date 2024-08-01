@@ -47,6 +47,7 @@ namespace MovieApp.Server.Repositories
             var director = await context.Directors
                 .Where(d => d.DirectorId == directorId)
                 .Include(d => d.Movies)
+                .Include(d => d.Picture)
                 .FirstOrDefaultAsync();
 
             if (director == null)
@@ -55,11 +56,11 @@ namespace MovieApp.Server.Repositories
             }
 
 
-            addBase64ToDirector(director);
-            foreach(Movie movie in director.Movies)
-            {
-                addBase64ToMovie(movie);
-            }
+            //addBase64ToDirector(director);
+            //foreach(Movie movie in director.Movies)
+            //{
+            //    addBase64ToMovie(movie);
+            //}
             return director;
         }
        
@@ -67,13 +68,14 @@ namespace MovieApp.Server.Repositories
         {
             var directors =  await context.Directors
                 .Include(d => d.Movies)
+                .Include(d => d.Picture)
                 .AsNoTracking()
                 .ToListAsync();
 
-            foreach (Director director in directors) 
-            {
-                addBase64ToDirector(director);
-            }
+            //foreach (Director director in directors) 
+            //{
+            //    addBase64ToDirector(director);
+            //}
             
             return directors;
         }
@@ -89,38 +91,42 @@ namespace MovieApp.Server.Repositories
             }
         }
 
-        private Director addBase64ToDirector(Director director)
-        {
-            var filePath = Path.Combine(env.WebRootPath, "images", director.Picture);
+        //private Director addBase64ToDirector(Director director)
+        //{
+        //    var filePath = Path.Combine(env.WebRootPath, "images", director.Picture);
 
-            if (!File.Exists(filePath))
-            {
-                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
-            }
+        //    if (!File.Exists(filePath))
+        //    {
+        //        filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+        //    }
 
-            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+        //    byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
 
-            string base64String = Convert.ToBase64String(imageBytes);
+        //    string base64String = Convert.ToBase64String(imageBytes);
 
-            director.Picture = base64String;
-            return director;
-        }
+        //    director.Picture = base64String;
+        //    return director;
+        //}
 
-        private Movie addBase64ToMovie(Movie movie)
-        {
-            var filePath = Path.Combine(env.WebRootPath, "images", movie.Picture);
+        //private Movie addBase64ToMovie(Movie movie)
+        //{
+        //    var filePath = Path.Combine(env.WebRootPath, "images", movie.Picture);
 
-            if (!File.Exists(filePath))
-            {
-                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
-            }
+        //    if (!File.Exists(filePath))
+        //    {
+        //        filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+        //    }
 
-            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+        //    byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
 
-            string base64String = Convert.ToBase64String(imageBytes);
+        //    string base64String = Convert.ToBase64String(imageBytes);
 
-            movie.Picture = base64String;
-            return movie;
-        }
+        //    movie.Picture = new Object { 
+        //        name = 
+        //        base64 = base64String,
+
+        //    };
+        //    return movie;
+        //}
     }
 }

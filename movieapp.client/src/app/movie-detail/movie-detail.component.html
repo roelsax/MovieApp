@@ -7,7 +7,7 @@
 
       </dt>
       <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-        <img width="300" src="data:image/png;base64,{{movie.picture}}" />
+        <img width="300" src="data:image/png;base64,{{movie.picture.base64}}" />
       </dd>
     </div>
     <div class="movie-info text-left">
@@ -91,7 +91,7 @@
       <a routerLink="/actor/{{actor.actorId}}" class="movie flex flex-col" *ngFor="let actor of movie.actors.$values">
 
         <div class="self-center image-wrapper">
-          <img class="rounded-sm" width="150" src="data:image/png;base64,{{actor.picture}}" />
+          <img class="rounded-sm" width="150" src="data:image/png;base64,{{actor.picture.base64}}" />
         </div>
         <div class="title text-gray-500 font-medium">
           {{ actor.name }}

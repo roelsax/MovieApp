@@ -6,7 +6,7 @@ export interface Movie {
   name: string;
   releaseDate: string;
   description: string;
-  picture: string;
+  picture: any;
   director: Director;
   genres: any;
   genreDtos: any;

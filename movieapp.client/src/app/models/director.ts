@@ -7,6 +7,6 @@ export interface Director {
   location: string;
   nationality: string;
   bio: string;
-  picture: string;
+  picture: any;
   movies: any;
 }

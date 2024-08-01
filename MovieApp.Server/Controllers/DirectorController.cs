@@ -8,13 +8,62 @@ namespace MovieApp.Server.Controllers
 {
     [Route("directors")]
     [ApiController]
-    public class DirectorController(DirectorService directorService) : Controller
+    public class DirectorController(DirectorService directorService, IWebHostEnvironment env) : Controller
     {
         [HttpGet]
-        public async Task<ActionResult> FindAll() => base.Ok(await directorService.GetDirectors());
+        public async Task<ActionResult> FindAll() 
+        {
+            var directors = await directorService.GetDirectors();
+
+            List<DirectorDTO> directorsMapped = new List<DirectorDTO>();
+
+            foreach (var director in directors) {
+                directorsMapped.Add(
+                    new DirectorDTO {
+                        DirectorId = director.DirectorId,
+                        Name = director.Name,
+                        DateOfBirth = director.DateOfBirth,
+                        Location = director.Location,
+                        Nationality = director.Nationality,
+                        Bio = director.Bio,
+                        Movies = director.Movies,
+                        Picture = new ImageDTO 
+                        { 
+                            Base64 = getBase64(director.Picture?.ImagePath)
+                        }
+                    });
+            }
+            return base.Ok(directorsMapped);
+        } 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> FindById(int id) => await directorService.FindDirector(id) is Director director ? base.Ok(director) : base.NotFound();
+        public async Task<ActionResult> FindById(int id) 
+        {
+            var director = await directorService.FindDirector(id);
+
+            if (director == null) 
+            {
+                return base.NotFound();
+            }
+
+            DirectorDTO directorMapped = new DirectorDTO 
+            {
+                DirectorId = director.DirectorId,
+                Name = director.Name,
+                DateOfBirth = director.DateOfBirth,
+                Location = director.Location,
+                Nationality = director.Nationality,
+                Bio = director.Bio,
+                Picture = new ImageDTO
+                {
+                    ImagePath = director.Picture.ImagePath,
+                    Base64 = getBase64(director.Picture.ImagePath)
+                },
+                Movies = director.Movies
+            };
+
+            return base.Ok(directorMapped);
+        }
 
         [HttpPost("create")]
         public async Task<ActionResult> Create([FromForm] DirectorCreateDto director)
@@ -35,7 +84,10 @@ namespace MovieApp.Server.Controllers
 
             if (director.Picture != null)
             {
-                newDirector.Picture = director.Picture.FileName;
+                newDirector.Picture = new Image
+                {
+                    ImagePath = director.Picture.FileName,
+                };
                 savePicture(director.Picture);
             }
             
@@ -108,6 +160,25 @@ namespace MovieApp.Server.Controllers
             {
                 await file.CopyToAsync(stream);
             }
+        }
+
+        private string getBase64(string? path)
+        {
+            string filePath = "";
+            if (path != null)
+            {
+                filePath = Path.Combine(env.WebRootPath, "images", path);
+            }
+
+            if (!System.IO.File.Exists(filePath) || string.IsNullOrEmpty(filePath) )
+            {
+                filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
+            }
+
+            byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            return base64String;
         }
     }
 }

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DirectorService } from '../services/director.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +9,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { ActorService } from '../services/actor.service';
+import { Actor } from '../models/actor'
 
 @Component({
   selector: 'add-actor',
@@ -26,14 +27,18 @@ import { ActorService } from '../services/actor.service';
     CommonModule
   ],
 })
-export class AddActorComponent {
+export class AddActorComponent implements OnInit {
   actorForm: FormGroup;
   selectedFile: File | null = null;
+  EditActor: Actor | null = null;
+  editMode: boolean = false;
 
   constructor(
+    private route: ActivatedRoute,
     private actorService: ActorService,
     private router: Router,
     private formBuilder: FormBuilder
+
   ) {
     this.actorForm = this.formBuilder.group({
       name: new FormControl(''),
@@ -44,6 +49,18 @@ export class AddActorComponent {
       picture: new FormControl(null),
     })
   }
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    
+    if (id) {
+      this.editMode = true;
+      this.actorService.getActor(parseInt(id))
+        .subscribe((res) => {
+          this.EditActor = res;
+          this.fillInActorToEdit();
+        })
+    }
+  }
 
   onFileChange(event: any) {
     if (event.target.files.length > 0) {
@@ -52,6 +69,17 @@ export class AddActorComponent {
         picture: this.selectedFile
       });
     }
+  }
+
+  fillInActorToEdit() {
+    this.actorForm.patchValue({
+      name: this.EditActor?.name,
+      date_of_birth: this.EditActor?.dateOfBirth,
+      bio: this.EditActor?.bio,
+      location: this.EditActor?.location,
+      nationality: this.EditActor?.nationality,
+
+    })
   }
 
   submitForm() {

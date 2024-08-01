@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System.ComponentModel.DataAnnotations;
+﻿using MovieApp.Server.Models;
 
-namespace MovieApp.Server.Models
+namespace MovieApp.Server.DTOs
 {
-    public class Director
+    public class DirectorDTO
     {
         public int DirectorId { get; set; }
         public string Name { get; set; }
@@ -11,11 +10,8 @@ namespace MovieApp.Server.Models
         public string? Location { get; set; }
         public string? Nationality { get; set; }
         public string? Bio { get; set; }
-        public Image? Picture { get; set; }
-        public int? PictureId { get; set; }
-
-        [Timestamp]
-        public byte[]? Aangepast { get; set; }
+        public ImageDTO? Picture { get; set; }
         public List<Movie> Movies { get; set; } = null!;
+
     }
 }

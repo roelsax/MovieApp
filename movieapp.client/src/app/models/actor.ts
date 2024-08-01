@@ -7,6 +7,6 @@ export interface Actor {
   location: string;
   nationality: string;
   bio: string;
-  picture: string;
+  picture: any;
   actorMovies: any;
 }

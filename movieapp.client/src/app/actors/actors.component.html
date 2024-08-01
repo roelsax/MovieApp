@@ -9,7 +9,7 @@
 <div class="grid grid-cols-5 gap-6 gap-y-6">
   <a routerLink="/actor/{{actor.actorId}}" class="movie flex flex-col bg-white mb-6 shadow-lg rounded p-4" *ngFor="let actor of actors">
     <div class="self-center image-wrapper">
-      <img class="rounded-sm" width="150" src="data:image/png;base64,{{ actor.picture}}" />
+      <img class="rounded-sm" width="150" src="data:image/png;base64,{{ actor.picture.base64 }}" />
     </div>
     <div class="title text-gray-500 font-medium">
       {{ actor.name }}

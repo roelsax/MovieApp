@@ -9,7 +9,7 @@ namespace MovieApp.Server.DTOs
         public string Name { get; set; }
         public DateOnly ReleaseDate { get; set; }
         public string Description { get; set; }
-        public string Picture { get; set; }
+        public ImageDTO Picture { get; set; }
         public Director Director { get; set; }
         public List<string> Genres { get; set; }
         public List<ActorMovieDTO> Actors { get; set; }

@@ -20,6 +20,7 @@ namespace MovieApp.Server.Models
         public DbSet<Director> Directors { get; set;}
         public DbSet<Actor> Actors { get; set;}
         public DbSet<ActorMovie> ActorMovies { get; set;}
+        public DbSet<Image> Images { get; set;}
         
         public MovieAppContext() { }
         public MovieAppContext(DbContextOptions<MovieAppContext> options) : base(options) { }
@@ -56,7 +57,7 @@ namespace MovieApp.Server.Models
             
             modelBuilder.ApplyConfiguration(new MovieSeeding());
             modelBuilder.ApplyConfiguration(new ActorMovieConfiguration());
-
+            modelBuilder.ApplyConfiguration(new ImageSeeding());
 
             base.OnModelCreating(modelBuilder);
         }
