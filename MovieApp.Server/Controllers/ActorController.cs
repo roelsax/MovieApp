@@ -63,6 +63,7 @@ namespace MovieApp.Server.Controllers
                 },
                 ActorMovies = actor.ActorMovies.Select(am => new ActorMovieDTO
                 {
+                    MovieId = am.MovieId,
                     Name = am.Movie.Name,
                     Picture = new ImageDTO
                     {

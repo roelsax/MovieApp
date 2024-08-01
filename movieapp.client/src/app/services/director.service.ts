@@ -22,7 +22,6 @@ export class DirectorService {
           nationality: director.nationality,
           bio: director.bio,
           picture: director.picture,
-          movies: director.movies.$values.map((movieRef: any) => movieRef.$ref)
         }));
       })
     )

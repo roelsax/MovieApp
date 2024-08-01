@@ -71,13 +71,13 @@
   <div>
     <h2 class="font-medium text-gray-500 text-2xl pb-4">Movies starring {{ actor.name }}</h2>
     <div class="border-t border-gray-200 p-4 grid grid-cols-5">
-      <a routerLink="/movie/{{item.movie.movieId}}" class="movie flex flex-col" *ngFor="let item of actor.actorMovies.$values">
+      <a routerLink="/movie/{{item.movieId}}" class="movie flex flex-col" *ngFor="let item of actor.actorMovies.$values">
 
         <div class="self-center image-wrapper">
-          <img class="rounded-sm" width="150" src="data:image/png;base64,{{item.movie.picture.base64}}" />
+          <img class="rounded-sm" width="150" src="data:image/png;base64,{{item.picture.base64}}" />
         </div>
         <div class="title text-gray-500 font-medium">
-          {{ item.movie.name }}
+          {{ item.name }}
         </div>
       </a>
     </div>

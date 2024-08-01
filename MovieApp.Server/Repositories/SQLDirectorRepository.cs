@@ -47,6 +47,7 @@ namespace MovieApp.Server.Repositories
             var director = await context.Directors
                 .Where(d => d.DirectorId == directorId)
                 .Include(d => d.Movies)
+                .ThenInclude(d => d.Picture)
                 .Include(d => d.Picture)
                 .FirstOrDefaultAsync();
 

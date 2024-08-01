@@ -26,7 +26,6 @@ namespace MovieApp.Server.Controllers
                         Location = director.Location,
                         Nationality = director.Nationality,
                         Bio = director.Bio,
-                        Movies = director.Movies,
                         Picture = new ImageDTO 
                         { 
                             Base64 = getBase64(director.Picture?.ImagePath)
@@ -59,7 +58,16 @@ namespace MovieApp.Server.Controllers
                     ImagePath = director.Picture.ImagePath,
                     Base64 = getBase64(director.Picture.ImagePath)
                 },
-                Movies = director.Movies
+                Movies = director.Movies.Select(m => new MovieDTO
+                {
+                    MovieId = m.MovieId,
+                    Name = m.Name,
+                    Picture = new ImageDTO
+                    {
+                        ImagePath = m.Picture.ImagePath,
+                        Base64 = getBase64(m.Picture.ImagePath)
+                    }
+                }).ToList()
             };
 
             return base.Ok(directorMapped);
