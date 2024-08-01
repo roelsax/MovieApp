@@ -28,7 +28,7 @@ namespace MovieApp.Server.Controllers
                         Bio = director.Bio,
                         Picture = new ImageDTO 
                         { 
-                            Base64 = getBase64(director.Picture?.ImagePath)
+                            Base64 = getBase64(director.Picture?.ImagePath ?? null)
                         }
                     });
             }
@@ -55,8 +55,8 @@ namespace MovieApp.Server.Controllers
                 Bio = director.Bio,
                 Picture = new ImageDTO
                 {
-                    ImagePath = director.Picture.ImagePath,
-                    Base64 = getBase64(director.Picture.ImagePath)
+                    ImagePath = director.Picture?.ImagePath ?? null,
+                    Base64 = getBase64(director.Picture?.ImagePath ?? null)
                 },
                 Movies = director.Movies.Select(m => new MovieDTO
                 {
@@ -64,8 +64,8 @@ namespace MovieApp.Server.Controllers
                     Name = m.Name,
                     Picture = new ImageDTO
                     {
-                        ImagePath = m.Picture.ImagePath,
-                        Base64 = getBase64(m.Picture.ImagePath)
+                        ImagePath = m.Picture?.ImagePath ?? null,
+                        Base64 = getBase64(m.Picture?.ImagePath ?? null)
                     }
                 }).ToList()
             };

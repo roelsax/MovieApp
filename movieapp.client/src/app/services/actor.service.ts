@@ -37,6 +37,13 @@ export class ActorService {
       })
   }
 
+  public editActor(actor: any, id: number, onSuccess: () => void): void {
+    this.http.put(`${this.apiUrl}${id}`, actor)
+      .subscribe((res) => {
+        onSuccess();
+      })
+  }
+
   public deleteActor(id: number, onSuccess: () => void): void {
     this.http.delete(`${this.apiUrl}delete/${id}`)
       .subscribe((res) => {

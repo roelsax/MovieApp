@@ -71,15 +71,26 @@ export class AddActorComponent implements OnInit {
     }
   }
 
-  fillInActorToEdit() {
+  async fillInActorToEdit() {
+
+    const file = this.EditActor?.picture ? await this.base64toFile(this.EditActor.picture) : null;
+    this.selectedFile = this.EditActor?.picture.ImagePath != "" ? file : null;
+    console.log(this.selectedFile);
     this.actorForm.patchValue({
       name: this.EditActor?.name,
       date_of_birth: this.EditActor?.dateOfBirth,
       bio: this.EditActor?.bio,
       location: this.EditActor?.location,
       nationality: this.EditActor?.nationality,
-
+      picture: this.EditActor?.picture.ImagePath != "" ? file : null
     })
+  }
+
+  async base64toFile(picture: any): Promise<File> {
+    let splitName = picture.imagePath?.split(".");
+    const res: Response = await fetch("data:image/png;base64," + picture.base64);
+    const blob: Blob = await res.blob();
+    return new File([blob], picture.imagePath, { type: `image/${splitName[1]}` });
   }
 
   submitForm() {
@@ -95,8 +106,16 @@ export class AddActorComponent implements OnInit {
       formData.append('picture', this.selectedFile);
     }
 
-    this.actorService.addActor(formData, () => {
-      this.router.navigate(['/actors']);
-    })
+    if (this.editMode && this.EditActor != null)
+    {
+      this.actorService.editActor(formData, this.EditActor.actorId, () => {
+        this.router.navigate(['/actors']);
+      })
+    } else {
+      this.actorService.addActor(formData, () => {
+        this.router.navigate(['/actors']);
+      })
+    }
+    
   }
 }

@@ -31,7 +31,7 @@ namespace MovieApp.Server.Controllers
                         Bio = actor.Bio,
                         Picture = new ImageDTO
                         {
-                            Base64 = getBase64(actor.Picture?.ImagePath)
+                            Base64 = getBase64(actor.Picture?.ImagePath ?? null)
                         },
                     });
             }
@@ -58,8 +58,8 @@ namespace MovieApp.Server.Controllers
                 Bio = actor.Bio,
                 Picture = new ImageDTO
                 {
-                    ImagePath = actor.Picture.ImagePath,
-                    Base64 = getBase64(actor.Picture.ImagePath)
+                    ImagePath = actor.Picture?.ImagePath ?? null,
+                    Base64 = getBase64(actor.Picture?.ImagePath ?? null)
                 },
                 ActorMovies = actor.ActorMovies.Select(am => new ActorMovieDTO
                 {
@@ -67,8 +67,8 @@ namespace MovieApp.Server.Controllers
                     Name = am.Movie.Name,
                     Picture = new ImageDTO
                     {
-                        ImagePath = am.Movie.Picture.ImagePath,
-                        Base64 = getBase64(am.Movie.Picture.ImagePath)
+                        ImagePath = am.Movie.Picture?.ImagePath ?? null,
+                        Base64 = getBase64(am.Movie.Picture?.ImagePath ?? null)
                     }
 
                 }).ToList(),
@@ -78,7 +78,7 @@ namespace MovieApp.Server.Controllers
     }
 
         [HttpPost("create")]
-        public async Task<ActionResult> Create([FromForm] ActorCreateDTO actor)
+        public async Task<ActionResult> Create([FromForm] ActorFormDTO actor)
         {
             if (!DateTimeOffset.TryParse(actor.DateOfBirth, out var dateTimeOffset))
             {
@@ -125,13 +125,28 @@ namespace MovieApp.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Actor actor)
+        public async Task<ActionResult> Put(int id, [FromForm] ActorFormDTO actorFormData)
         {
+            if (!DateTimeOffset.TryParse(actorFormData.DateOfBirth, out var dateTimeOffset))
+            {
+                return BadRequest("Invalid date format.");
+            }
+            var actor = await actorService.FindActor(id);
+
+            if (actor != null) 
+            {
+                actor.Name = actorFormData.Name;
+                actor.DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime);
+                actor.Bio = actorFormData.Bio;
+                actor.Location = actorFormData.Location;
+                actor.Nationality = actorFormData.Nationality;
+                actor.ActorId = id;
+            }
+            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    actor.ActorId = id;
                     await actorService.Update(actor);
                     return base.Ok();
                 }
