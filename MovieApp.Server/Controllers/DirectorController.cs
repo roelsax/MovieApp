@@ -74,7 +74,7 @@ namespace MovieApp.Server.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<ActionResult> Create([FromForm] DirectorCreateDto director)
+        public async Task<ActionResult> Create([FromForm] DirectorFormDTO director)
         {
             if (!DateTimeOffset.TryParse(director.DateOfBirth, out var dateTimeOffset))
             {
@@ -92,11 +92,13 @@ namespace MovieApp.Server.Controllers
 
             if (director.Picture != null)
             {
+                var fileName = generateFileName(director.Picture);
+
                 newDirector.Picture = new Image
                 {
-                    ImagePath = director.Picture.FileName,
+                    ImagePath = fileName,
                 };
-                savePicture(director.Picture);
+                savePicture(director.Picture, fileName);
             }
             
             if (ModelState.IsValid)
@@ -119,13 +121,43 @@ namespace MovieApp.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Director director)
+        public async Task<ActionResult> Put(int id, [FromForm] DirectorFormDTO directorFormData)
         {
+            if (!DateTimeOffset.TryParse(directorFormData.DateOfBirth, out var dateTimeOffset))
+            {
+                return BadRequest("Invalid date format.");
+            }
+
+            var director = await directorService.FindDirector(id);
+
+            if (director != null)
+            {
+                director.Name = directorFormData.Name;
+                director.DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime);
+                director.Bio = directorFormData.Bio;
+                director.Location = directorFormData.Location;
+                director.Nationality = directorFormData.Nationality;
+                director.DirectorId = id;
+
+                if (
+                    directorFormData.Picture != null &&
+                    director.Picture?.ImagePath != directorFormData.Picture?.FileName
+                    )
+                {
+                    var fileName = generateFileName(directorFormData.Picture);
+                    director.Picture = new Image
+                    {
+                        ImagePath = fileName,
+
+                    };
+                    savePicture(directorFormData.Picture, fileName);
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    director.DirectorId = id;
                     await directorService.Update(director);
                     return base.Ok();
                 }
@@ -155,19 +187,30 @@ namespace MovieApp.Server.Controllers
             return base.Ok();
         }
 
-        private async void savePicture(IFormFile file)
+        private async void savePicture(IFormFile file, string fileName)
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", file.FileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
 
             if (!Directory.Exists("images"))
             {
                 Directory.CreateDirectory("images");
             }
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            if (!System.IO.File.Exists(filePath))
             {
-                await file.CopyToAsync(stream);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
             }
+        }
+
+        private string generateFileName(IFormFile file)
+        {
+            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            var fileName = $"{timestamp}_{file.FileName}";
+
+            return fileName;
         }
 
         private string getBase64(string? path)

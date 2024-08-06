@@ -75,7 +75,7 @@ export class AddActorComponent implements OnInit {
 
     const file = this.EditActor?.picture ? await this.base64toFile(this.EditActor.picture) : null;
     this.selectedFile = this.EditActor?.picture.ImagePath != "" ? file : null;
-    console.log(this.selectedFile);
+    
     this.actorForm.patchValue({
       name: this.EditActor?.name,
       date_of_birth: this.EditActor?.dateOfBirth,
@@ -104,6 +104,13 @@ export class AddActorComponent implements OnInit {
 
     if (this.selectedFile) {
       formData.append('picture', this.selectedFile);
+    }
+
+
+    if (localStorage.getItem('movieData')) {
+      this.actorService.addActor(formData, () => {
+        this.router.navigate(['/add-movie']);
+      })
     }
 
     if (this.editMode && this.EditActor != null)

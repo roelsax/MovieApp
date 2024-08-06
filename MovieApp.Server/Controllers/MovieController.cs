@@ -44,7 +44,11 @@ namespace MovieApp.Server.Controllers
                             ImagePath = movie.Picture?.ImagePath ?? null,
                             Base64 = getBase64(movie.Picture?.ImagePath ?? null)
                         },
-                        Genres = movie.Genres.Select(g => g.ToString()).ToList(),
+                        Genres = movie.Genres.Select(g => new GenreDTO
+                        {
+                            EnumId = (int)g,
+                            Name = g.ToString()
+                        }).ToList(),
                         Actors = movie.ActorMovies.Select(am => new ActorMovieDTO
                         {
                             ActorId = am.Actor.ActorId,
@@ -81,7 +85,11 @@ namespace MovieApp.Server.Controllers
                     ImagePath = movie.Picture?.ImagePath ?? null,
                     Base64 = getBase64(movie.Picture?.ImagePath ?? null)
                 },
-                Genres = movie.Genres.Select(g => g.ToString()).ToList(),
+                Genres = movie.Genres.Select(g => new GenreDTO 
+                {
+                    EnumId = (int) g,
+                    Name = g.ToString()
+                }).ToList(),
                 Actors = movie.ActorMovies.Select(am => new ActorMovieDTO
                 {
                     ActorId = am.Actor.ActorId,
@@ -90,7 +98,6 @@ namespace MovieApp.Server.Controllers
                         ImagePath = am.Actor.Picture?.ImagePath ?? null,
                         Base64 = getBase64(am.Actor.Picture?.ImagePath ?? null)
                     }
-
                 }).ToList(),
 
             };
@@ -147,8 +154,37 @@ namespace MovieApp.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, Movie movie)
+        public async Task<ActionResult> Put(int id, [FromBody] JsonElement movieJson)
         {
+            DateTime dateTime = DateTime.Parse(movieJson.GetProperty("releaseDate").GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+            var picture = movieJson.GetProperty("picture");
+            var base64 = picture.GetProperty("image").ToString();
+
+            var movie = await movieService.FindMovie(id);
+
+            if (movie != null)
+            {
+                movie.Name = movieJson.GetProperty("name").GetString();
+                movie.ReleaseDate = DateOnly.FromDateTime(dateTime);
+                movie.DirectorId = movieJson.GetProperty("directorId").GetInt32();
+                movie.Description = movieJson.GetProperty("description").GetString();
+                movie.ActorMovies = new List<ActorMovie>();
+                movie.Genres = new List<Genre>();
+            };
+
+            if (picture.GetProperty("name").ToString() != null &&
+                    movie.Picture?.ImagePath != picture.GetProperty("name").ToString())
+            {
+                movie.Picture = new Image
+                {
+                    ImagePath = picture.GetProperty("name").ToString(),
+                };
+                savePicture(base64, movie.Picture.ImagePath);
+            }
+
+            addActors(movieJson, movie);
+            addGenres(movieJson, movie);
+
             if (ModelState.IsValid)
             {
                 try
@@ -187,7 +223,7 @@ namespace MovieApp.Server.Controllers
         }
 
 
-        private async void saveImage(string base64, string fileName)
+        private void saveImage(string base64, string fileName)
         {
             byte[] pictureBytes = Convert.FromBase64String(base64);
 
@@ -197,8 +233,17 @@ namespace MovieApp.Server.Controllers
             {
                 Directory.CreateDirectory(imagesPath);
             }
-            string filePath = Path.Combine(imagesPath, fileName);
-            await System.IO.File.WriteAllBytesAsync(filePath, pictureBytes);
+            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            var fullFileName = $"{timestamp}_{fileName}";
+            string filePath = Path.Combine(imagesPath, fullFileName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    System.IO.File.WriteAllBytesAsync(filePath, pictureBytes);
+                }
+            }
         }
 
         private void savePicture(string base64, string fileName)

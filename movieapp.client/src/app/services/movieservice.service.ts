@@ -55,13 +55,19 @@ export class MovieService {
       })
   }
 
+  public editMovie(movie: any, id: number, onSuccess: () => void): void {
+    this.http.put(`${this.apiUrl}${id}`, movie)
+      .subscribe((res) => {
+        onSuccess();
+      })
+  }
+
   public deleteMovie(id: number, onSuccess: () => void): void {
     this.http.delete(`${this.apiUrl}delete/${id}`)
       .subscribe((res) => {
         onSuccess();
       })
   }
-
 
   public getGenres(): Observable<string[]>
   {

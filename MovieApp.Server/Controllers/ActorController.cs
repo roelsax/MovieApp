@@ -96,12 +96,14 @@ namespace MovieApp.Server.Controllers
 
             if (actor.Picture != null)
             {
+                var fileName = generateFileName(actor.Picture);
                 newActor.Picture = new Image
                 {
-                    ImagePath = actor.Picture.FileName,
+                    ImagePath = fileName,
                     
                 };
-                savePicture(actor.Picture);
+                
+                savePicture(actor.Picture, fileName);
             }
 
             if (ModelState.IsValid)
@@ -141,8 +143,22 @@ namespace MovieApp.Server.Controllers
                 actor.Location = actorFormData.Location;
                 actor.Nationality = actorFormData.Nationality;
                 actor.ActorId = id;
+
+                if (
+                    actorFormData.Picture != null &&
+                    actor.Picture?.ImagePath != actorFormData.Picture?.FileName
+                    )
+                {
+                    var fileName = generateFileName(actorFormData.Picture);
+                    actor.Picture = new Image
+                    {
+                        ImagePath = fileName,
+
+                    };
+                    savePicture(actorFormData.Picture, fileName);
+                }
             }
-            
+
             if (ModelState.IsValid)
             {
                 try
@@ -176,19 +192,29 @@ namespace MovieApp.Server.Controllers
             return base.Ok();
         }
 
-        private async void savePicture(IFormFile file)
+        private void savePicture(IFormFile file, string fileName)
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", file.FileName);
-
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
             if (!Directory.Exists("images"))
             {
                 Directory.CreateDirectory("images");
             }
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            if (!System.IO.File.Exists(filePath))
             {
-                await file.CopyToAsync(stream);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyToAsync(stream);
+                }
             }
+        }
+
+        private string generateFileName(IFormFile file)
+        {
+            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            var fileName = $"{timestamp}_{file.FileName}";
+
+            return fileName;
         }
 
         private string getBase64(string? path)

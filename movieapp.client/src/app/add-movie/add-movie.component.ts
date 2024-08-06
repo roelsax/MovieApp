@@ -7,11 +7,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { DirectorService } from '../services/director.service';
 import { Director } from '../models/director';
+import { Movie } from '../models/movie';
 import { Actor } from '../models/actor';
 import { ActorService } from '../services/actor.service';
 import { CommonModule } from '@angular/common';
 import { MovieService } from '../services/movieservice.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'add-movie',
@@ -41,8 +42,12 @@ export class AddMovieComponent implements OnInit {
   actorSearchResults: Actor[] = [];
   movieForm: FormGroup;
   genres: string[] = [];
+  EditMovie: Movie | null = null;
+  editMode: boolean = false;
+  selectedFile: File | null = null;
 
   constructor(
+    private route: ActivatedRoute,
     private directorService: DirectorService,
     private actorService: ActorService,
     private formBuilder: FormBuilder,
@@ -62,7 +67,12 @@ export class AddMovieComponent implements OnInit {
   ngOnInit(): void {
     this.directorService
       .getDirectors()
-      .subscribe((result: Director[]) => (this.directors = result));
+      .subscribe((result: Director[]) => {
+        this.directors = result;
+        if (localStorage.getItem('movieData')) {
+          this.loadStorageData();
+        }
+    });
 
     this.actorService
       .getActors()
@@ -71,6 +81,29 @@ export class AddMovieComponent implements OnInit {
     this.movieService
       .getGenres()
       .subscribe((result: string[]) => (this.genres = result));
+
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (id) {
+      this.editMode = true;
+      this.movieService.getMovie(parseInt(id))
+        .subscribe((res) => {
+          this.EditMovie = res;
+          this.fillInMovieToEdit();
+        })
+    }
+  }
+
+  addNewActor() {
+    localStorage.setItem('movieData', JSON.stringify(this.movieForm.value));
+    
+    this.router.navigate(['/add-actor']);
+  }
+
+  addNewDirector() {
+    localStorage.setItem('movieData', JSON.stringify(this.movieForm.value));
+
+    this.router.navigate(['/add-director']);
   }
 
   get actorsArray(): FormArray {
@@ -84,6 +117,7 @@ export class AddMovieComponent implements OnInit {
   onFileChange(event: any) {
     if (event.target.files.length > 0) {
       const uploadedFile = event.target.files[0];
+      this.selectedFile = event.target.files[0];
       const reader = new FileReader();
 
       reader.readAsDataURL(uploadedFile);
@@ -96,6 +130,75 @@ export class AddMovieComponent implements OnInit {
         });
       };
     }
+  }
+
+  async fillInMovieToEdit() {
+    const file = this.EditMovie?.picture ? await this.base64toFile(this.EditMovie.picture) : null;
+    this.selectedFile = this.EditMovie?.picture.ImagePath != "" ? file : null;
+
+    this.movieForm.patchValue({
+      name: this.EditMovie?.name,
+      release_date: this.EditMovie?.releaseDate,
+      description: this.EditMovie?.description,
+      picture: this.EditMovie?.picture.ImagePath != "" ? this.EditMovie?.picture : null,
+      directorId: this.EditMovie?.director.directorId,
+    });
+
+    this.directorString = this.EditMovie?.director.name ?? '';
+    this.loadActors(this.EditMovie?.actors.$values);
+    this.loadGenres(this.EditMovie?.genres.$values);
+  }
+
+  async base64toFile(picture: any): Promise<File> {
+    let splitName = 'imagePath' in picture ? picture.imagePath?.split(".") : picture.name?.split(".");
+    const base64string = 'base64' in picture ? "data:image/png;base64," + picture.base64 : picture.image;
+    const res: Response = await fetch(base64string);
+    const blob: Blob = await res.blob();
+    const fileName = 'imagePath' in picture ? picture.imagePath : picture.name;
+    return new File([blob], fileName, { type: `image/${splitName[1]}` });
+  }
+
+  async loadStorageData() {
+    var data = JSON.parse(localStorage.getItem('movieData') ?? '{}');
+    const file = data.picture ? await this.base64toFile(data.picture) : null;
+    this.selectedFile = data.picture.name != "" ? file : null;
+
+    this.movieForm.patchValue({
+      name: data.name ?? '',
+      release_date: data.release_date ?? '',
+      description: data.description ?? '',
+      picture: data.picture ?? null,
+      directorId: data.directorId ?? null,
+    })
+    
+    this.directorString = this.directors.find(director => director.directorId === data.directorId)?.name || '';
+    this.loadActors(data.actors);
+    this.loadGenres(data.genres);
+  }
+
+  loadActors(array: any) {
+    array.forEach((actor: any) => {
+      const actorControl = new FormGroup({
+        id: new FormControl(actor.actorId),
+        name: new FormControl(actor.name)
+      });
+
+      const actorsArray = this.movieForm.controls['actors'] as FormArray;
+      actorsArray.push(actorControl);
+    });
+  }
+
+
+  loadGenres(array: any) {
+    array.forEach((genre: any) => {
+      const genreControl = new FormGroup({
+        id: new FormControl(genre.enumId),
+        name: new FormControl(genre.name)
+      })
+
+      const genresArray = this.movieForm.controls['genres'] as FormArray;
+      genresArray.push(genreControl);
+    });
   }
 
   searchDirectors() {
@@ -119,7 +222,7 @@ export class AddMovieComponent implements OnInit {
   filterName(searchString: string, fullName: string) {
     const splitName = fullName.split(" ");
 
-    return splitName[0].toLowerCase().startsWith(searchString) || splitName[1].toLowerCase().startsWith(searchString);
+    return splitName.length == 2 ? splitName[0].toLowerCase().startsWith(searchString) || splitName[1].toLowerCase().startsWith(searchString) : splitName[0].toLowerCase().startsWith(searchString);
   }
 
   selectDirector(director: Director) {
@@ -143,13 +246,13 @@ export class AddMovieComponent implements OnInit {
 
   selectGenre(event: any) {
     const genre = this.genres[event.target.value];
-    const actorControl = new FormGroup({
+    const genreControl = new FormGroup({
       id: new FormControl(event.target.value),
       name: new FormControl(genre)
     });
 
     const genresArray = this.movieForm.controls['genres'] as FormArray;
-    genresArray.push(actorControl);
+    genresArray.push(genreControl);
     this.selectedGenre = '';
   }
 
@@ -181,6 +284,12 @@ export class AddMovieComponent implements OnInit {
     form.genres.forEach((genre: any) => {
       movie.genres.push(genre);
     })
+
+    if (this.editMode && this.EditMovie != null) {
+      this.movieService.editMovie(movie, this.EditMovie.movieId, () => {
+        this.router.navigate(['/movies']);
+      })
+    } else 
     this.movieService.addMovie(movie, () => {
       this.router.navigate(['/movies']);
     })

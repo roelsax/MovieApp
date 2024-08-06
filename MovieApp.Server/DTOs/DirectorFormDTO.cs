@@ -1,6 +1,6 @@
 ﻿namespace MovieApp.Server.DTOs
 {
-    public class DirectorCreateDto
+    public class DirectorFormDTO
     {
         public string Name { get; set; }
         public string DateOfBirth { get; set; }
