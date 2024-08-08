@@ -98,7 +98,7 @@ namespace MovieApp.Server.Controllers
                 {
                     ImagePath = fileName,
                 };
-                savePicture(director.Picture, fileName);
+                await savePicture(director.Picture, fileName);
             }
             
             if (ModelState.IsValid)
@@ -150,7 +150,7 @@ namespace MovieApp.Server.Controllers
                         ImagePath = fileName,
 
                     };
-                    savePicture(directorFormData.Picture, fileName);
+                    await savePicture(directorFormData.Picture, fileName);
                 }
             }
 
@@ -187,7 +187,7 @@ namespace MovieApp.Server.Controllers
             return base.Ok();
         }
 
-        private async void savePicture(IFormFile file, string fileName)
+        private async Task savePicture(IFormFile file, string fileName)
         {
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
 

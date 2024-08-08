@@ -104,6 +104,13 @@ export class AddDirectorComponent implements OnInit {
       formData.append('picture', this.selectedFile);
     }
 
+    if (localStorage.getItem('movieData')) {
+      this.directorService.addDirector(formData, () => {
+        this.router.navigate(['/add-movie']);
+      })
+      return;
+    }
+
     if (this.editMode && this.editDirector != null)
     {
       this.directorService.editDirector(formData, this.editDirector.directorId, () => {

@@ -12,6 +12,8 @@ namespace MovieApp.Server.Controllers
     [ApiController]
     public class ActorController(ActorService actorService, IWebHostEnvironment env) : Controller
     {
+        private static readonly object _fileLock = new object();
+
         [HttpGet]
         public async Task<ActionResult> FindAll() {
             var actors = await actorService.GetActors();
@@ -200,11 +202,14 @@ namespace MovieApp.Server.Controllers
                 Directory.CreateDirectory("images");
             }
 
-            if (!System.IO.File.Exists(filePath))
+            lock (_fileLock)
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                if (!System.IO.File.Exists(filePath))
                 {
-                    file.CopyToAsync(stream);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyToAsync(stream).GetAwaiter().GetResult();
+                    }
                 }
             }
         }

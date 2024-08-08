@@ -111,6 +111,7 @@ export class AddActorComponent implements OnInit {
       this.actorService.addActor(formData, () => {
         this.router.navigate(['/add-movie']);
       })
+      return;
     }
 
     if (this.editMode && this.EditActor != null)
@@ -118,6 +119,7 @@ export class AddActorComponent implements OnInit {
       this.actorService.editActor(formData, this.EditActor.actorId, () => {
         this.router.navigate(['/actors']);
       })
+      return;
     } else {
       this.actorService.addActor(formData, () => {
         this.router.navigate(['/actors']);

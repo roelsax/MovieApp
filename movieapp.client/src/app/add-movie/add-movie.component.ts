@@ -71,6 +71,7 @@ export class AddMovieComponent implements OnInit {
         this.directors = result;
         if (localStorage.getItem('movieData')) {
           this.loadStorageData();
+          localStorage.clear();
         }
     });
 
@@ -145,7 +146,7 @@ export class AddMovieComponent implements OnInit {
     });
 
     this.directorString = this.EditMovie?.director.name ?? '';
-    this.loadActors(this.EditMovie?.actors.$values);
+    this.loadActors(this.EditMovie?.actors.$values, 'edit');
     this.loadGenres(this.EditMovie?.genres.$values);
   }
 
@@ -176,10 +177,11 @@ export class AddMovieComponent implements OnInit {
     this.loadGenres(data.genres);
   }
 
-  loadActors(array: any) {
+  loadActors(array: any, method?: string) {
     array.forEach((actor: any) => {
+      const id = method === 'edit' ? actor.actorId : actor.id;
       const actorControl = new FormGroup({
-        id: new FormControl(actor.actorId),
+        id: new FormControl(id),
         name: new FormControl(actor.name)
       });
 

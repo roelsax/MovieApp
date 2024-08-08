@@ -14,6 +14,8 @@ namespace MovieApp.Server.Controllers
     [ApiController]
     public class MovieController(MovieService movieService, IWebHostEnvironment env) : Controller
     {
+        private static readonly object _fileLock = new object();
+
         [HttpGet]
         public async Task<ActionResult> FindAll(string? search, string? genre){
 
@@ -111,13 +113,15 @@ namespace MovieApp.Server.Controllers
             DateTime dateTime = DateTime.Parse(movieJson.GetProperty("releaseDate").GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
             var picture = movieJson.GetProperty("picture");
             var base64 = picture.GetProperty("image").ToString();
+            var newFileName = generateFileName(picture.GetProperty("name").ToString());
+
             Movie newMovie = new Movie()
             {
                 Name = movieJson.GetProperty("name").GetString(),
                 ReleaseDate = DateOnly.FromDateTime(dateTime),
                 Picture = new Image
                 {
-                    ImagePath = picture.GetProperty("name").ToString(),
+                    ImagePath = newFileName,
                 },
                 DirectorId = movieJson.GetProperty("directorId").GetInt32(),
                 Description = movieJson.GetProperty("description").GetString(),
@@ -159,6 +163,7 @@ namespace MovieApp.Server.Controllers
             DateTime dateTime = DateTime.Parse(movieJson.GetProperty("releaseDate").GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
             var picture = movieJson.GetProperty("picture");
             var base64 = picture.GetProperty("image").ToString();
+            var newFileName = generateFileName(picture.GetProperty("name").ToString());
 
             var movie = await movieService.FindMovie(id);
 
@@ -177,7 +182,7 @@ namespace MovieApp.Server.Controllers
             {
                 movie.Picture = new Image
                 {
-                    ImagePath = picture.GetProperty("name").ToString(),
+                    ImagePath = newFileName,
                 };
                 savePicture(base64, movie.Picture.ImagePath);
             }
@@ -233,15 +238,16 @@ namespace MovieApp.Server.Controllers
             {
                 Directory.CreateDirectory(imagesPath);
             }
-            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-            var fullFileName = $"{timestamp}_{fileName}";
-            string filePath = Path.Combine(imagesPath, fullFileName);
+            
+            string filePath = Path.Combine(imagesPath, fileName);
 
-            if (!System.IO.File.Exists(filePath))
+            lock (_fileLock)
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                if (!System.IO.File.Exists(filePath))
                 {
-                    System.IO.File.WriteAllBytesAsync(filePath, pictureBytes);
+                    
+                    System.IO.File.WriteAllBytesAsync(filePath, pictureBytes).GetAwaiter().GetResult();
+                    
                 }
             }
         }
@@ -249,8 +255,16 @@ namespace MovieApp.Server.Controllers
         private void savePicture(string base64, string fileName)
         {
             string[] splitString = base64.Split(new string[] { "base64," }, StringSplitOptions.None);
-
+            //var newFileName = generateFileName(fileName);
             saveImage(splitString[1], fileName);
+        }
+
+        private string generateFileName(string originalFileName)
+        {
+            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            var fileName = $"{timestamp}_{originalFileName}";
+
+            return fileName;
         }
 
         private void addActors(JsonElement movieJson, Movie newMovie)
