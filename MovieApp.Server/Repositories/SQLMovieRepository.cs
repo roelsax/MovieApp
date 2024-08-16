@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using Microsoft.Extensions.Hosting;
 
 
 namespace MovieApp.Server.Repositories
@@ -37,10 +38,28 @@ namespace MovieApp.Server.Repositories
 
             if (movie != null)
             {
+                await DeleteMovieImage(movie.Picture);
                 context.Movies.Remove(movie);
                 await context.SaveChangesAsync();
             }
             
+        }
+
+        public async Task DeleteMovieImage(Image? image)
+        {
+            if (image == null)
+            {
+                return;
+            }
+            string imagePath = image.ImagePath;
+            var filePath = Path.Combine(env.WebRootPath, "images", imagePath);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+
+                context.Images.Remove(image);
+                await context.SaveChangesAsync();
+            }
         }
 
         public async Task<Movie?> Get(int movieId) {
@@ -56,8 +75,6 @@ namespace MovieApp.Server.Repositories
             {
                 return null;
             }
-
-            //addBase64ToMovie(movie);
 
             return movie;
         }
@@ -84,11 +101,6 @@ namespace MovieApp.Server.Repositories
 
             var movies = query.ToListAsync();
 
-            //foreach (Movie movie in await movies)
-            //{
-            //    addBase64ToMovie(movie);
-            //}
-
             return await movies;
         }
 
@@ -105,53 +117,5 @@ namespace MovieApp.Server.Repositories
             }
         }
 
-        //private Movie addBase64ToMovie(Movie movie)
-        //{
-        //    if (movie.ActorMovies.Any())
-        //    {
-        //        foreach(ActorMovie actorMovie in  movie.ActorMovies)
-        //        {
-        //            addBase64ToActorMovie(actorMovie);
-        //        }
-        //    }
-        //    var filePath = Path.Combine(env.WebRootPath, "images", movie.Picture);
-
-        //    if (!File.Exists(filePath))
-        //    {
-        //        filePath = Path.Combine(env.WebRootPath, "images", "dummy-image-square.jpg");
-        //    }
-            
-        //    byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
-        //    string base64String = Convert.ToBase64String(imageBytes);
-
-        //    movie.Picture = new Image
-        //    {
-        //        path = movie.Picture,
-        //        base64 = base64String
-        //    };
-
-        //    return movie;
-        //}
-
-        //private ActorMovie addBase64ToActorMovie(ActorMovie actorMovie)
-        //{
-        //    var filePath = Path.Combine(env.WebRootPath, "images", actorMovie.Actor.Picture);
-
-        //    if (!File.Exists(filePath))
-        //    {
-        //        filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
-        //    }
-
-        //    byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
-        //    string base64String = Convert.ToBase64String(imageBytes);
-
-        //    actorMovie.Actor.Picture = new Image
-        //    {
-        //        path = actorMovie.Actor.Picture,
-        //        base64 = base64String
-        //    };
-
-        //    return actorMovie;
-        //}
     }
 }

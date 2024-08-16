@@ -37,7 +37,25 @@ namespace MovieApp.Server.Repositories
 
             if (director != null)
             {
+                await DeleteDirectorImage(director.Picture);
                 context.Directors.Remove(director);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteDirectorImage(Image? image)
+        {
+            if (image == null)
+            {
+                return;
+            }
+            string imagePath = image.ImagePath;
+            var filePath = Path.Combine(env.WebRootPath, "images", imagePath);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+
+                context.Images.Remove(image);
                 await context.SaveChangesAsync();
             }
         }
@@ -56,12 +74,6 @@ namespace MovieApp.Server.Repositories
                 return null;
             }
 
-
-            //addBase64ToDirector(director);
-            //foreach(Movie movie in director.Movies)
-            //{
-            //    addBase64ToMovie(movie);
-            //}
             return director;
         }
        
@@ -72,11 +84,6 @@ namespace MovieApp.Server.Repositories
                 .Include(d => d.Picture)
                 .AsNoTracking()
                 .ToListAsync();
-
-            //foreach (Director director in directors) 
-            //{
-            //    addBase64ToDirector(director);
-            //}
             
             return directors;
         }
@@ -91,43 +98,5 @@ namespace MovieApp.Server.Repositories
                 throw;
             }
         }
-
-        //private Director addBase64ToDirector(Director director)
-        //{
-        //    var filePath = Path.Combine(env.WebRootPath, "images", director.Picture);
-
-        //    if (!File.Exists(filePath))
-        //    {
-        //        filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
-        //    }
-
-        //    byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
-
-        //    string base64String = Convert.ToBase64String(imageBytes);
-
-        //    director.Picture = base64String;
-        //    return director;
-        //}
-
-        //private Movie addBase64ToMovie(Movie movie)
-        //{
-        //    var filePath = Path.Combine(env.WebRootPath, "images", movie.Picture);
-
-        //    if (!File.Exists(filePath))
-        //    {
-        //        filePath = Path.Combine(env.WebRootPath, "images", "dummy-person.jpg");
-        //    }
-
-        //    byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
-
-        //    string base64String = Convert.ToBase64String(imageBytes);
-
-        //    movie.Picture = new Object { 
-        //        name = 
-        //        base64 = base64String,
-
-        //    };
-        //    return movie;
-        //}
     }
 }

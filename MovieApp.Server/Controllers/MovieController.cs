@@ -255,7 +255,7 @@ namespace MovieApp.Server.Controllers
         private void savePicture(string base64, string fileName)
         {
             string[] splitString = base64.Split(new string[] { "base64," }, StringSplitOptions.None);
-            //var newFileName = generateFileName(fileName);
+            
             saveImage(splitString[1], fileName);
         }
 
