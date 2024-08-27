@@ -9,9 +9,13 @@ import { Actor } from '../models/actor';
 })
 export class ActorsComponent implements OnInit {
   public actors: Actor[] = [];
+  loading: boolean = true;
   constructor(private actorService: ActorService) { }
 
   ngOnInit(): void {
-    this.actorService.getActors().subscribe((result: Actor[]) => (this.actors = result));
+    this.actorService.getActors().subscribe((result: Actor[]) => {
+      this.actors = result;
+      this.loading = false;
+    });
   }
 }

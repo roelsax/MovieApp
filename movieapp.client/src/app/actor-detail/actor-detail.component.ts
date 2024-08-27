@@ -10,6 +10,7 @@ import { ActorService } from '../services/actor.service';
 })
 export class ActorDetailComponent implements OnInit {
   public actor?: Actor;
+  loading: boolean = true;
   constructor(
     private route: ActivatedRoute,
     private actorService: ActorService
@@ -21,6 +22,8 @@ export class ActorDetailComponent implements OnInit {
         this.actorService
           .getActor(parseInt(id))
           .subscribe(actor => this.actor = actor);
+      } else {
+        this.loading = false;
       }
     }
 }

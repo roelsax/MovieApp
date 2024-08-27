@@ -3,7 +3,7 @@
 </h1>
 
 <ng-template #movieTitle>
-  <h1 class="mb-5 text-2xl">Movies</h1>
+  <h1 class="mb-5 text-2xl">Movies <span *ngIf="queryGenre != ''">Of genre {{ queryGenre }}</span></h1>
 
   <div class="flex justify-end mr-5 mb-5">
     <a routerLink="/add-movie" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add movie</a>
@@ -33,7 +33,7 @@
 </ng-template>
 
 
-<div class="grid grid-cols-2 md:grid-cols-5 gap-6 gap-y-6">
+<div *ngIf="movies.length > 0; else noMoviesTemplate" class="grid grid-cols-2 md:grid-cols-5 gap-6 gap-y-6">
   <a routerLink="/movie/{{item.movieId}}" class="movie flex flex-col bg-white mb-6 shadow-lg rounded p-4" *ngFor="let item of movies">
     <div class="self-center image-wrapper">
       <img class="rounded-sm" width="150" src="data:image/png;base64,{{item.picture.base64}}" />
@@ -43,3 +43,12 @@
     </div>
   </a>
 </div>
+
+<ng-template #noMoviesTemplate>
+  <div class="mt-5" *ngIf="loading; else noMovies">
+    <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <ng-template #noMovies>
+    <h2>No movies added yet.</h2>
+  </ng-template>
+</ng-template>

@@ -11,6 +11,8 @@ import { Movie } from '../models/movie';
 })
 export class DirectorDetailComponent implements OnInit {
   public director?: Director;
+  loading: boolean = true;
+
   constructor(
     private route: ActivatedRoute,
     private directorService: DirectorService
@@ -18,11 +20,12 @@ export class DirectorDetailComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
-    if (id != null)
-    {
+    if (id != null) {
       this.directorService
         .getDirector(parseInt(id))
         .subscribe(director => this.director = director);
+    } else {
+      this.loading = false;
     }
   }
 }

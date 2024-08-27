@@ -31,7 +31,7 @@
 
       <div>
         <dt class="text-sm font-medium text-gray-500 text-lg">
-          Nationality
+          Country
         </dt>
         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
           {{director.nationality}}
@@ -84,7 +84,12 @@
   </div>
 </div>
 <ng-template #directorNotFoundTemplate>
-  <h2>Director not found</h2>
+  <div *ngIf="loading; else directorNotFound">
+    <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <ng-template #directorNotFound>
+    <h2>Director not found</h2>
+  </ng-template>
 </ng-template>
 
 

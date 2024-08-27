@@ -13,7 +13,7 @@ import { BrowserModule } from '@angular/platform-browser';
 })
 export class MovieDetailComponent implements OnInit {
   public movie?: Movie;
-
+  loading: boolean = true;
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService
@@ -25,6 +25,8 @@ export class MovieDetailComponent implements OnInit {
         this.movieService
           .getMovie(parseInt(id))
           .subscribe(movie => this.movie = movie);
+      } else {
+        this.loading = false;
       }
     }
 }

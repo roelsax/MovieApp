@@ -9,11 +9,15 @@ import { Director } from '../models/director';
 })
 export class DirectorsComponent implements OnInit {
   public directors: Director[] = [];
+  loading: boolean = true;
   constructor(private directorService: DirectorService) { }
 
     ngOnInit(): void {
       this.directorService
         .getDirectors()
-        .subscribe((result: Director[]) => (this.directors = result));
+        .subscribe((result: Director[]) => {
+          this.directors = result;
+          this.loading = false;
+        });
     }
 }

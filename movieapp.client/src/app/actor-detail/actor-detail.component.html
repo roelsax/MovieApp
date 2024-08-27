@@ -31,7 +31,7 @@
 
       <div>
         <dt class="text-sm font-medium text-gray-500 text-lg">
-          Nationality
+          Country
         </dt>
         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
           {{actor.nationality}}
@@ -84,5 +84,10 @@
   </div>
 </div>
 <ng-template #actorNotFoundTemplate>
-  <h2>Actor not found</h2>
+  <div *ngIf="loading; else actorNotFound">
+    <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <ng-template #actorNotFound>
+    <h2>Actor not found</h2>
+  </ng-template>
 </ng-template>

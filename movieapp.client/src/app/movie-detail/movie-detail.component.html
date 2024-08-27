@@ -101,5 +101,10 @@
   </div>
 </div>
 <ng-template #movieNotFoundTemplate>
-  <h2>Movie not found</h2>
+  <div *ngIf="loading; else movieNotFound">
+    <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <ng-template #movieNotFound>
+    <h2>Movie not found</h2>
+  </ng-template>
 </ng-template>
