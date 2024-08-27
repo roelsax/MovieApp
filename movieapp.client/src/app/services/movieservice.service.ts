@@ -55,7 +55,6 @@ export class MovieService {
       },
         (errorResponse) => {
           if (errorResponse.status === 400 && errorResponse.error) {
-            console.log('error', errorResponse.error);
             onError(errorResponse.error);
           }
         }

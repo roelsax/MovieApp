@@ -27,18 +27,28 @@ export class DirectorService {
     )
   }
 
-  public addDirector(director: any, onSuccess: () => void): void {
+  public addDirector(director: any, onSuccess: () => void, onError: (errors: any) => void): void {
     this.http.post(`${this.apiUrl}create`, director)
       .subscribe((res) => {
         onSuccess();
-      })
+      },
+        (errorResponse) => {
+          if (errorResponse.status === 400 && errorResponse.error) {
+            onError(errorResponse.error);
+          }
+        })
   }
 
-  public editDirector(director: any, id: number, onSuccess: () => void): void {
+  public editDirector(director: any, id: number, onSuccess: () => void, onError: (errors: any) => void): void {
     this.http.put(`${this.apiUrl}${id}`, director)
       .subscribe((res) => {
         onSuccess();
-      })
+      },
+        (errorResponse) => {
+          if (errorResponse.status === 400 && errorResponse.error) {
+            onError(errorResponse.error);
+          }
+        })
   }
 
   public deleteDirector(id: number, onSuccess: () => void): void {

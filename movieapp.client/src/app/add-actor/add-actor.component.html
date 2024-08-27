@@ -5,21 +5,25 @@
   <div class="flex flex-col md:flex-row gap-5">
     <div class="w-full md:w-3/5">
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Name <span *ngIf="actorForm.get('name')?.errors" class="error text-sm text-red-500 float-right">
+  {{ actorForm.get('name')?.errors?.['serverError'] }}
+</span></label>
         <input type="text"
                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                formControlName="name">
 
       </div>
       <div class="mb-3 datepicker-div">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date of birth</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Date of birth <span *ngIf="actorForm.get('date_of_birth')?.errors" class="error text-sm text-red-500 float-right">
+          {{ actorForm.get('date_of_birth')?.errors?.['serverError'] }}
+        </span></label>
         <input placeholder="MM/DD/YYYY" formControlName="date_of_birth" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" matInput [matDatepicker]="picker">
 
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </div>
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Bio</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Bio</label>
         <textarea class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   rows="6"
                   formControlName="bio"></textarea>
@@ -29,7 +33,7 @@
     <div class="w-full md:w-2/5">
 
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Picture</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Picture</label>
         <p class="text-sm font-medium text-gray-900 text-left" *ngIf="selectedFile">Selected File: {{ selectedFile.name }}</p>
         <input type="file"
                class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -38,14 +42,18 @@
       </div>
 
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Location</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Location <span *ngIf="actorForm.get('location')?.errors" class="error text-sm text-red-500 float-right">
+          {{ actorForm.get('location')?.errors?.['serverError'] }}
+        </span></label>
         <input type="text"
                class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                formControlName="location" />
       </div>
 
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">nationality</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Country <span *ngIf="actorForm.get('nationality')?.errors" class="error text-sm text-red-500 float-right">
+          {{ actorForm.get('nationality')?.errors?.['serverError'] }}
+        </span></label>
 
         <select class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 formControlName="nationality">

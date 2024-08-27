@@ -97,7 +97,11 @@ export class AddActorComponent implements OnInit {
     const form = this.actorForm.value;
     let formData = new FormData();
     formData.append('name', form.name);
-    formData.append('dateOfBirth', new Date(form.date_of_birth).toISOString());
+
+    if (form.date_of_birth != '') {
+      formData.append('dateOfBirth', new Date(form.date_of_birth).toISOString());
+    }
+
     formData.append('bio', form.bio);
     formData.append('location', form.location);
     formData.append('nationality', form.nationality);
@@ -105,26 +109,46 @@ export class AddActorComponent implements OnInit {
     if (this.selectedFile) {
       formData.append('picture', this.selectedFile);
     }
+    const handleSuccess = () => {
+      this.router.navigate(['/actors']);
+    };
 
+    const handleError = (errors: any) => {
+      this.displayValidationErrors(errors);
+    };
 
     if (localStorage.getItem('movieData')) {
       this.actorService.addActor(formData, () => {
         this.router.navigate(['/add-movie']);
-      })
+      }, handleError)
       return;
     }
 
     if (this.editMode && this.EditActor != null)
     {
-      this.actorService.editActor(formData, this.EditActor.actorId, () => {
-        this.router.navigate(['/actors']);
-      })
+      this.actorService.editActor(formData, this.EditActor.actorId, handleSuccess, handleError)
       return;
     } else {
-      this.actorService.addActor(formData, () => {
-        this.router.navigate(['/actors']);
-      })
+      this.actorService.addActor(formData, handleSuccess, handleError)
     }
+  }
+
+  displayValidationErrors(errors: any) {
+
+    var formKeys = {
+      'Name': "name",
+      'DateOfBirth': "date_of_birth",
+      'Location': "location",
+      'Nationality': "nationality"
+    };
     
+    for (const key in errors.errors) {
+
+      var thisKey = formKeys[key as keyof typeof formKeys];
+
+      if (errors.errors.hasOwnProperty(key) && this.actorForm.controls[thisKey]) {
+        this.actorForm.controls[thisKey].setErrors({ serverError: errors.errors[key] });
+      }
+    }
   }
 }

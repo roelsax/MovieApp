@@ -30,18 +30,28 @@ export class ActorService {
     )
   }
 
-  public addActor(actor: any, onSuccess: () => void): void {
+  public addActor(actor: any, onSuccess: () => void, onError: (errors: any) => void): void {
     this.http.post(`${this.apiUrl}create`, actor)
       .subscribe((res) => {
         onSuccess();
-      })
+      },
+        (errorResponse) => {
+          if (errorResponse.status === 400 && errorResponse.error) {
+            onError(errorResponse.error);
+          }
+        })
   }
 
-  public editActor(actor: any, id: number, onSuccess: () => void): void {
+  public editActor(actor: any, id: number, onSuccess: () => void, onError: (errors: any) => void): void {
     this.http.put(`${this.apiUrl}${id}`, actor)
       .subscribe((res) => {
         onSuccess();
-      })
+      },
+        (errorResponse) => {
+          if (errorResponse.status === 400 && errorResponse.error) {
+            onError(errorResponse.error);
+          }
+        })
   }
 
   public deleteActor(id: number, onSuccess: () => void): void {

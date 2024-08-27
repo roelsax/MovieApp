@@ -95,7 +95,11 @@ export class AddDirectorComponent implements OnInit {
     const form = this.directorForm.value;
     let formData = new FormData();
     formData.append('name', form.name);
-    formData.append('dateOfBirth', new Date(form.date_of_birth).toISOString());
+
+    if (form.date_of_birth != '') {
+      formData.append('dateOfBirth', new Date(form.date_of_birth).toISOString());
+    }
+    
     formData.append('bio', form.bio);
     formData.append('location', form.location);
     formData.append('nationality', form.nationality);
@@ -104,22 +108,45 @@ export class AddDirectorComponent implements OnInit {
       formData.append('picture', this.selectedFile);
     }
 
+    const handleSuccess = () => {
+      this.router.navigate(['/directors']);
+    };
+
+    const handleError = (errors: any) => {
+      this.displayValidationErrors(errors);
+    };
+
     if (localStorage.getItem('movieData')) {
       this.directorService.addDirector(formData, () => {
         this.router.navigate(['/add-movie']);
-      })
+      }, handleError)
       return;
     }
 
     if (this.editMode && this.editDirector != null)
     {
-      this.directorService.editDirector(formData, this.editDirector.directorId, () => {
-        this.router.navigate(['/directors']);
-      })
+      this.directorService.editDirector(formData, this.editDirector.directorId, handleSuccess, handleError)
     } else {
-    this.directorService.addDirector(formData, () => {
-      this.router.navigate(['/directors']);
-    })
+      this.directorService.addDirector(formData, handleSuccess, handleError)
+    }
+  }
+
+  displayValidationErrors(errors: any) {
+
+    var formKeys = {
+      'Name': "name",
+      'DateOfBirth': "date_of_birth",
+      'Location': "location",
+      'Nationality': "nationality"
+    };
+
+    for (const key in errors) {
+
+      var thisKey = formKeys[key as keyof typeof formKeys];
+
+      if (errors.hasOwnProperty(key) && this.directorForm.controls[thisKey]) {
+        this.directorForm.controls[thisKey].setErrors({ serverError: errors[key] });
+      }
     }
   }
 }
