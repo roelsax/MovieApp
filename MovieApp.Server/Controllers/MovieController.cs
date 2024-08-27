@@ -6,6 +6,9 @@ using MovieApp.Server.DTOs;
 using System.Text.Json;
 using System.IO;
 using System;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication;
 
 
 namespace MovieApp.Server.Controllers
@@ -73,7 +76,6 @@ namespace MovieApp.Server.Controllers
             {
                 return base.NotFound();
             }
-
          
             MovieDTO movieMapped = new MovieDTO
             {
@@ -110,28 +112,45 @@ namespace MovieApp.Server.Controllers
         [HttpPost("create")]
         public async Task<ActionResult> Create([FromBody] JsonElement movieJson)
         {
-            DateTime dateTime = DateTime.Parse(movieJson.GetProperty("releaseDate").GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
-            var picture = movieJson.GetProperty("picture");
-            var base64 = picture.GetProperty("image").ToString();
-            var newFileName = generateFileName(picture.GetProperty("name").ToString());
+            if (!movieJson.TryGetProperty("releaseDate", out var releaseDate) || string.IsNullOrEmpty(releaseDate.GetString()))
+            {
+                ModelState.AddModelError("releaseDate", "Release date is required.");
+            }
+
+            DateTime dateTime = default;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    dateTime = DateTime.Parse(releaseDate.GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                }
+                catch (FormatException)
+                {
+                    ModelState.AddModelError("releaseDate", "Invalid release date format.");
+                }
+            }
 
             Movie newMovie = new Movie()
             {
-                Name = movieJson.GetProperty("name").GetString(),
+                Name = HtmlEncoder.Default.Encode(movieJson.GetProperty("name").GetString()),
                 ReleaseDate = DateOnly.FromDateTime(dateTime),
-                Picture = new Image
-                {
-                    ImagePath = newFileName,
-                },
-                DirectorId = movieJson.GetProperty("directorId").GetInt32(),
-                Description = movieJson.GetProperty("description").GetString(),
+                Picture = processPicture(movieJson),
+                Description = HtmlEncoder.Default.Encode(movieJson.GetProperty("description").GetString()),
                 ActorMovies = new List<ActorMovie>(),
                 Genres = new List<Genre>()
             };
 
-            if (!string.IsNullOrEmpty(newMovie.Picture.ImagePath))
+
+            movieJson.TryGetProperty("directorId", out var directorId);
+
+            if (directorId.ValueKind != JsonValueKind.Null)
             {
-                savePicture(base64, newMovie.Picture.ImagePath);
+                newMovie.DirectorId = directorId.GetInt32();
+            }
+
+            if (!TryValidateModel(newMovie))
+            {
+                return base.BadRequest(ModelState);
             }
 
             addActors(movieJson, newMovie);
@@ -169,10 +188,10 @@ namespace MovieApp.Server.Controllers
 
             if (movie != null)
             {
-                movie.Name = movieJson.GetProperty("name").GetString();
+                movie.Name = HtmlEncoder.Default.Encode(movieJson.GetProperty("name").GetString());
                 movie.ReleaseDate = DateOnly.FromDateTime(dateTime);
                 movie.DirectorId = movieJson.GetProperty("directorId").GetInt32();
-                movie.Description = movieJson.GetProperty("description").GetString();
+                movie.Description = HtmlEncoder.Default.Encode(movieJson.GetProperty("description").GetString());
                 movie.ActorMovies = new List<ActorMovie>();
                 movie.Genres = new List<Genre>();
             };
@@ -252,6 +271,26 @@ namespace MovieApp.Server.Controllers
             }
         }
 
+        private Image? processPicture(JsonElement movieJson)
+        {
+            
+            if (movieJson.TryGetProperty("picture", out var picture) && !string.IsNullOrEmpty(picture.GetString()))
+            {
+                var base64 = picture.GetProperty("image").ToString();
+                var newFileName = generateFileName(picture.GetProperty("name").ToString());
+                if (!string.IsNullOrEmpty(newFileName))
+                {
+                    savePicture(base64, newFileName);
+                }
+
+                return new Image
+                {
+                    ImagePath = newFileName
+                };
+            }
+            return null;
+        }
+
         private void savePicture(string base64, string fileName)
         {
             string[] splitString = base64.Split(new string[] { "base64," }, StringSplitOptions.None);
@@ -310,7 +349,6 @@ namespace MovieApp.Server.Controllers
 
         private string getBase64(string path)
         {
-            
             var filePath = Path.Combine(env.WebRootPath, "images", path);
 
             if (!System.IO.File.Exists(filePath))

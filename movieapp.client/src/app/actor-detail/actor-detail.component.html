@@ -70,7 +70,7 @@
   </div>
   <div>
     <h2 class="font-medium text-gray-500 text-2xl pb-4">Movies starring {{ actor.name }}</h2>
-    <div class="border-t border-gray-200 p-4 grid grid-cols-5">
+    <div class="border-t border-gray-200 p-4 grid grid-cols-2 gap-6 gap-y-6 md:grid-cols-5">
       <a routerLink="/movie/{{item.movieId}}" class="movie flex flex-col" *ngFor="let item of actor.actorMovies.$values">
 
         <div class="self-center image-wrapper">

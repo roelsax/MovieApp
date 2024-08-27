@@ -5,19 +5,22 @@
 <ng-template #movieTitle>
   <h1 class="mb-5 text-2xl">Movies</h1>
 
+  <div class="flex justify-end mr-5 mb-5">
+    <a routerLink="/add-movie" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add movie</a>
+  </div>
+
   <div class="filters">
-    <form class="flex gap-2 w-full px-5 mb-5">
+    <form class="flex gap-2 w-full md:px-5 mb-5">
       <input type="text"
              name="searchString"
              [(ngModel)]="searchString"
              placeholder="Search..."
-             class="w-3/5 ml-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-      <div class="flex gap-2 justify-end w-2/5">
-        <select
-                [(ngModel)]="selectedGenre"
+             class="w-2/5 md:w-3/5 ml-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+      <div class="flex gap-2 justify-end w-3/5 md:w-2/5">
+        <select [(ngModel)]="selectedGenre"
                 name="genre"
                 placeholder="Select a genre..."
-                class="block w-4/5 p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                class="block w-4/5 p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm md:text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
           <option selected value="">All genres</option>
           <option value="{{ genre }}" *ngFor="let genre of genres; let i = index">{{ genre }}</option>
         </select>
@@ -26,13 +29,11 @@
     </form>
   </div>
 
-  <div class="flex justify-end mr-5">
-    <a routerLink="/add-movie" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add movie</a>
-  </div>
+
 </ng-template>
 
 
-<div class="grid grid-cols-5 gap-6 gap-y-6">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-6 gap-y-6">
   <a routerLink="/movie/{{item.movieId}}" class="movie flex flex-col bg-white mb-6 shadow-lg rounded p-4" *ngFor="let item of movies">
     <div class="self-center image-wrapper">
       <img class="rounded-sm" width="150" src="data:image/png;base64,{{item.picture.base64}}" />

@@ -3,6 +3,7 @@ using MovieApp.Server.Services;
 using MovieApp.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Server.DTOs;
+using System.Text.Encodings.Web;
 
 namespace MovieApp.Server.Controllers
 {
@@ -83,11 +84,11 @@ namespace MovieApp.Server.Controllers
 
             Director newDirector = new Director()
             {
-                Name = director.Name,
+                Name = HtmlEncoder.Default.Encode(director.Name),
                 DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime),
-                Bio = director.Bio,
-                Location = director.Location,
-                Nationality = director.Nationality,
+                Bio = HtmlEncoder.Default.Encode(director.Bio),
+                Location = HtmlEncoder.Default.Encode(director.Location),
+                Nationality = HtmlEncoder.Default.Encode(director.Nationality),
             };
 
             if (director.Picture != null)
@@ -132,11 +133,11 @@ namespace MovieApp.Server.Controllers
 
             if (director != null)
             {
-                director.Name = directorFormData.Name;
+                director.Name = HtmlEncoder.Default.Encode(directorFormData.Name);
                 director.DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime);
-                director.Bio = directorFormData.Bio;
-                director.Location = directorFormData.Location;
-                director.Nationality = directorFormData.Nationality;
+                director.Bio = HtmlEncoder.Default.Encode(directorFormData.Bio);
+                director.Location = HtmlEncoder.Default.Encode(directorFormData.Location);
+                director.Nationality = HtmlEncoder.Default.Encode(directorFormData.Nationality);
                 director.DirectorId = id;
 
                 if (

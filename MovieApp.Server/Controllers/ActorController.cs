@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieApp.Server.DTOs;
 using System.IO;
 using System.Text;
+using System.Text.Encodings.Web;
 
 namespace MovieApp.Server.Controllers
 {
@@ -89,11 +90,11 @@ namespace MovieApp.Server.Controllers
 
             Actor newActor = new Actor()
             {
-                Name = actor.Name,
+                Name = HtmlEncoder.Default.Encode(actor.Name),
                 DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime),
-                Bio = actor.Bio,
-                Location = actor.Location,
-                Nationality = actor.Nationality,
+                Bio = HtmlEncoder.Default.Encode(actor.Bio),
+                Location = HtmlEncoder.Default.Encode(actor.Location),
+                Nationality = HtmlEncoder.Default.Encode(actor.Nationality),
             };
 
             if (actor.Picture != null)
@@ -139,11 +140,11 @@ namespace MovieApp.Server.Controllers
 
             if (actor != null) 
             {
-                actor.Name = actorFormData.Name;
+                actor.Name = HtmlEncoder.Default.Encode(actorFormData.Name);
                 actor.DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime);
-                actor.Bio = actorFormData.Bio;
-                actor.Location = actorFormData.Location;
-                actor.Nationality = actorFormData.Nationality;
+                actor.Bio = HtmlEncoder.Default.Encode(actorFormData.Bio);
+                actor.Location = HtmlEncoder.Default.Encode(actorFormData.Location);
+                actor.Nationality = HtmlEncoder.Default.Encode(actorFormData.Nationality);
                 actor.ActorId = id;
 
                 if (

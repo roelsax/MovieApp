@@ -6,8 +6,10 @@ namespace MovieApp.Server.Models
     public class Director
     {
         public int DirectorId { get; set; }
+        [Required]
         public string Name { get; set; }
-        public DateOnly? DateOfBirth { get; set; }
+        [Required]
+        public DateOnly DateOfBirth { get; set; }
         public string? Location { get; set; }
         public string? Nationality { get; set; }
         public string? Bio { get; set; }

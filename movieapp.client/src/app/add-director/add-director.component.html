@@ -2,8 +2,8 @@
       [formGroup]="directorForm"
       (ngSubmit)="$event.preventDefault(); submitForm()"
       enctype="multipart/form-data">
-  <div class="flex gap-5">
-    <div class="w-3/5">
+  <div class="flex flex-col md:flex-row gap-5">
+    <div class="w-full md:w-3/5">
       <div class="mb-3">
         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
         <input type="text"
@@ -26,7 +26,7 @@
 
       </div>
     </div>
-    <div class="w-2/5">
+    <div class="w-full md:w-2/5">
       <div class="mb-3">
         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Picture</label>
         <p class="text-sm font-medium text-gray-900 text-left" *ngIf="selectedFile">Selected File: {{ selectedFile.name }}</p>

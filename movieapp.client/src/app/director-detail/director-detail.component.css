@@ -4,3 +4,9 @@
     height: unset;
     border-radius: 5px;
 }
+
+@media(max-width: 768px) {
+  .director-image {
+    width: 200px;
+  }
+}

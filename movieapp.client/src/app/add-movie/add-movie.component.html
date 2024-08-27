@@ -1,24 +1,28 @@
 <form class="max-w-full ml-5"
       [formGroup]="movieForm"
       (ngSubmit)="$event.preventDefault(); submitForm()">
-  <div class="flex gap-5">
-    <div class="w-3/5">
+  <div class="flex flex-col md:flex-row gap-5">
+    <div class="w-full md:w-3/5">
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Name<span *ngIf="movieForm.get('name')?.errors" class="error text-sm text-red-500 float-right">
+            {{ movieForm.get('name')?.errors?.['serverError'] }}
+        </span></label>
         <input type="text"
                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                formControlName="name">
 
       </div>
       <div class="mb-3 datepicker-div">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Release date</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Release date <span *ngIf="movieForm.get('release_date')?.errors?.['serverError']" class="error text-sm text-red-500 float-right">
+            {{ movieForm.get('release_date')?.errors?.['serverError'] }}
+        </span></label>
         <input placeholder="MM/DD/YYYY" formControlName="release_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" matInput formControlName="release_date" [matDatepicker]="picker">
 
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </div>
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Description</label>
         <textarea class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   rows="7"
                   formControlName="description"></textarea>
@@ -26,7 +30,7 @@
       </div>
 
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Image</label>
         <p class="text-sm font-medium text-gray-900 text-left" *ngIf="selectedFile">Selected File: {{ selectedFile.name }}</p>
         <input type="file"
                class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -34,9 +38,14 @@
       </div>
     </div>
 
-    <div class="w-2/5">
+    <div class="w-full md:w-2/5">
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Director</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">
+          Director <span *ngIf="movieForm.get('directorId')?.errors?.['serverError']" class="error text-sm text-red-500 float-right">
+            {{ movieForm.get('directorId')?.errors?.['serverError'] }}
+          </span>
+        </label>
+        
         <input type="text"
                class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                placeholder="search for director"
@@ -58,7 +67,7 @@
       </div>
 
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Actors</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Actors</label>
         <div class="flex flex-wrap gap-2 mb-2" *ngIf="movieForm.controls['actors'].value.length > 0">
           <span>Selected actors:</span>
           <div class="flex items-center bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300" *ngFor="let actor of actorsArray.controls; let i = index;">
@@ -91,7 +100,7 @@
       </div>
 
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Genres</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Genres</label>
         <div class="flex flex-wrap gap-2 mb-2" *ngIf="movieForm.controls['genres'].value.length > 0">
           <span>Selected genres:</span>
           <div class="flex items-center bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300" *ngFor="let genre of genresArray.controls; let i = index;">

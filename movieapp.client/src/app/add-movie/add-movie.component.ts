@@ -287,13 +287,35 @@ export class AddMovieComponent implements OnInit {
       movie.genres.push(genre);
     })
 
-    if (this.editMode && this.EditMovie != null) {
-      this.movieService.editMovie(movie, this.EditMovie.movieId, () => {
-        this.router.navigate(['/movies']);
-      })
-    } else 
-    this.movieService.addMovie(movie, () => {
+    const handleSuccess = () => {
       this.router.navigate(['/movies']);
-    })
+    };
+
+    const handleError = (errors: any) => {
+      this.displayValidationErrors(errors);
+    };
+
+    if (this.editMode && this.EditMovie != null) {
+      this.movieService.editMovie(movie, this.EditMovie.movieId, handleSuccess, handleError)
+    } else 
+    this.movieService.addMovie(movie, handleSuccess, handleError)
+  }
+
+  displayValidationErrors(errors: any) {
+
+    var formKeys = {
+      'Name': "name",
+      'releaseDate': "release_date",
+      'Director': "directorId"
+    };
+
+    for (const key in errors) {
+      
+      var thisKey = formKeys[key as keyof typeof formKeys];
+      
+      if (errors.hasOwnProperty(key) && this.movieForm.controls[thisKey]) {
+        this.movieForm.controls[thisKey].setErrors({ serverError: errors[key] });
+      }
+    }
   }
 }

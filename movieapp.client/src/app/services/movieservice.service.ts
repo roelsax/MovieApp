@@ -48,18 +48,30 @@ export class MovieService {
     return this.http.get<Movie>(`${this.apiUrl}${id}`)
   }
 
-  public addMovie(movie: any, onSuccess: () => void): void {
+  public addMovie(movie: any, onSuccess: () => void, onError: (errors: any) => void): void {
     this.http.post(`${this.apiUrl}create`, movie)
       .subscribe((res) => {
         onSuccess();
-      })
+      },
+        (errorResponse) => {
+          if (errorResponse.status === 400 && errorResponse.error) {
+            console.log('error', errorResponse.error);
+            onError(errorResponse.error);
+          }
+        }
+      )
   }
 
-  public editMovie(movie: any, id: number, onSuccess: () => void): void {
+  public editMovie(movie: any, id: number, onSuccess: () => void, onError: (errors: any) => void): void {
     this.http.put(`${this.apiUrl}${id}`, movie)
       .subscribe((res) => {
         onSuccess();
-      })
+      },
+        (errorResponse) => {
+          if (errorResponse.status === 400 && errorResponse.error) {
+            onError(errorResponse.error);
+          }
+        })
   }
 
   public deleteMovie(id: number, onSuccess: () => void): void {
