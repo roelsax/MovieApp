@@ -15,7 +15,7 @@ builder.Services.AddTransient<ActorService>();
 builder.Services.AddScoped<IActorRepository, SQLActorRepository>();
 builder.Services.AddTransient<DirectorService>();
 builder.Services.AddScoped<IDirectorRepository, SQLDirectorRepository>();
-builder.Services.AddTransient<MovieService>();
+builder.Services.AddTransient<IMovieService, MovieService>();
 builder.Services.AddScoped<IMovieRepository, SQLMovieRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

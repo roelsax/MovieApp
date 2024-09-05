@@ -3,7 +3,7 @@ using MovieApp.Server.Models;
 
 namespace MovieApp.Server.Services
 {
-    public class MovieService
+    public class MovieService : IMovieService
     {
         private readonly IMovieRepository repository;
 

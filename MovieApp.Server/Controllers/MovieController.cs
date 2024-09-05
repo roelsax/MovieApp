@@ -15,7 +15,7 @@ namespace MovieApp.Server.Controllers
 {
     [Route("movies")]
     [ApiController]
-    public class MovieController(MovieService movieService, IWebHostEnvironment env) : Controller
+    public class MovieController(IMovieService movieService, IWebHostEnvironment env) : Controller
     {
         private static readonly object _fileLock = new object();
 
