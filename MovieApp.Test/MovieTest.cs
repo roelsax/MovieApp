@@ -35,16 +35,31 @@ namespace MovieApp.Test
                 Name = "First movie",
                 ReleaseDate = new DateOnly(2023, 1, 1),
                 Description = "Description 1",
-                Genres = new List<Genre>{Genre.Action, Genre.Thriller}
+                Genres = new List<Genre>{Genre.Action, Genre.Thriller},
+                DirectorId = 1,
+
             };
+
+            movie1.ActorMovies.Add(new ActorMovie
+            {
+                ActorId = 1,
+                Movie = movie1
+            });
 
             movie2 = new Movie { 
                 MovieId = 2, 
                 Name = "Second movie", 
                 ReleaseDate = new DateOnly(2023, 1, 2), 
                 Description = "Description 2",
-                Genres = new List<Genre> { Genre.Comedy, Genre.Adventure }
+                Genres = new List<Genre> { Genre.Comedy, Genre.Adventure },
+                DirectorId = 2,
             };
+
+            movie2.ActorMovies.Add(new ActorMovie
+            {
+                ActorId = 2,
+                Movie = movie2
+            });
         }
 
         [TestMethod]

@@ -17,7 +17,7 @@ namespace MovieApp.Server.Models
 
         [Timestamp]
         public byte[]? Aangepast { get; set; }
-        public Director Director { get; set; }
+        public Director? Director { get; set; }
         public ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>();
         [Required]
         public List<Genre> Genres { get; set; } = null!;

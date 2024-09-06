@@ -306,7 +306,8 @@ export class AddMovieComponent implements OnInit {
     var formKeys = {
       'Name': "name",
       'releaseDate': "release_date",
-      'Director': "directorId"
+      'Director': "directorId",
+      'Genres': "genres"
     };
 
     for (const key in errors) {

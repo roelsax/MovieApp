@@ -136,8 +136,8 @@ namespace MovieApp.Server.Controllers
                 ReleaseDate = DateOnly.FromDateTime(dateTime),
                 Picture = processPicture(movieJson),
                 Description = HtmlEncoder.Default.Encode(movieJson.GetProperty("description").GetString()),
-                ActorMovies = new List<ActorMovie>(),
-                Genres = new List<Genre>()
+                //ActorMovies = new List<ActorMovie>(),
+                //Genres = new List<Genre>()
             };
 
 
@@ -146,6 +146,9 @@ namespace MovieApp.Server.Controllers
             if (directorId.ValueKind != JsonValueKind.Null)
             {
                 newMovie.DirectorId = directorId.GetInt32();
+            } else
+            {
+                ModelState.AddModelError("Director", "Director is required.");
             }
 
             if (!TryValidateModel(newMovie))
@@ -310,6 +313,7 @@ namespace MovieApp.Server.Controllers
         {
             if (movieJson.TryGetProperty("actors", out JsonElement actorsJson))
             {
+                newMovie.ActorMovies = actorsJson.EnumerateArray().Any() ? new List<ActorMovie>() : null;
                 foreach (var actorJson in actorsJson.EnumerateArray())
                 {
                     var actorMovie = new ActorMovie
@@ -326,6 +330,7 @@ namespace MovieApp.Server.Controllers
         {
             if (movieJson.TryGetProperty("genres", out JsonElement genresJson))
             {
+                newMovie.Genres = genresJson.EnumerateArray().Any() ? new List<Genre>() : null;
                 foreach (var genreJson in genresJson.EnumerateArray())
                 {
                     var genre = (Genre)Enum.Parse(typeof(Genre), genreJson.GetProperty("name").GetString(), true);
@@ -347,8 +352,13 @@ namespace MovieApp.Server.Controllers
             }
         }
 
-        private string getBase64(string path)
+        private string? getBase64(string? path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
             var filePath = Path.Combine(env.WebRootPath, "images", path);
 
             if (!System.IO.File.Exists(filePath))

@@ -100,7 +100,10 @@
       </div>
 
       <div class="mb-3">
-        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Genres</label>
+        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-left">Genres <span *ngIf="movieForm.get('genres')?.errors?.['serverError']" class="error text-sm text-red-500 float-right">
+        {{ movieForm.get('genres')?.errors?.['serverError'] }}
+        </span>
+        </label>
         <div class="flex flex-wrap gap-2 mb-2" *ngIf="movieForm.controls['genres'].value.length > 0">
           <span>Selected genres:</span>
           <div class="flex items-center bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300" *ngFor="let genre of genresArray.controls; let i = index;">
