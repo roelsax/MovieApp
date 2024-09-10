@@ -9,6 +9,7 @@ using System;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace MovieApp.Server.Controllers
@@ -20,7 +21,7 @@ namespace MovieApp.Server.Controllers
         private static readonly object _fileLock = new object();
 
         [HttpGet]
-        public async Task<ActionResult> FindAll(string? search, string? genre){
+        public async Task<IActionResult> FindAll(string? search, string? genre){
 
             int? genreInt;
             if (genre != null)
@@ -54,7 +55,7 @@ namespace MovieApp.Server.Controllers
                             EnumId = (int)g,
                             Name = g.ToString()
                         }).ToList(),
-                        Actors = movie.ActorMovies.Select(am => new ActorMovieDTO
+                        Actors = movie.ActorMovies?.Select(am => new ActorMovieDTO
                         {
                             ActorId = am.Actor.ActorId,
                             Name = am.Actor.Name
@@ -117,12 +118,19 @@ namespace MovieApp.Server.Controllers
                 ModelState.AddModelError("releaseDate", "Release date is required.");
             }
 
-            DateTime dateTime = default;
+            Movie newMovie = new Movie()
+            {
+                Name = HtmlEncoder.Default.Encode(movieJson.GetProperty("name").GetString()),
+                Picture = processPicture(movieJson),
+                Description = HtmlEncoder.Default.Encode(movieJson.GetProperty("description").GetString()),
+            };
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    dateTime = DateTime.Parse(releaseDate.GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                   DateTime dateTime = DateTime.Parse(releaseDate.GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    newMovie.ReleaseDate = DateOnly.FromDateTime(dateTime);
                 }
                 catch (FormatException)
                 {
@@ -130,20 +138,9 @@ namespace MovieApp.Server.Controllers
                 }
             }
 
-            Movie newMovie = new Movie()
-            {
-                Name = HtmlEncoder.Default.Encode(movieJson.GetProperty("name").GetString()),
-                ReleaseDate = DateOnly.FromDateTime(dateTime),
-                Picture = processPicture(movieJson),
-                Description = HtmlEncoder.Default.Encode(movieJson.GetProperty("description").GetString()),
-                //ActorMovies = new List<ActorMovie>(),
-                //Genres = new List<Genre>()
-            };
-
-
             movieJson.TryGetProperty("directorId", out var directorId);
 
-            if (directorId.ValueKind != JsonValueKind.Null)
+            if (directorId.ValueKind != JsonValueKind.Undefined && directorId.ValueKind != JsonValueKind.Null)
             {
                 newMovie.DirectorId = directorId.GetInt32();
             } else
@@ -151,13 +148,20 @@ namespace MovieApp.Server.Controllers
                 ModelState.AddModelError("Director", "Director is required.");
             }
 
-            if (!TryValidateModel(newMovie))
+            addActors(movieJson, newMovie);
+            addGenres(movieJson, newMovie);
+
+            var validationResultList = new List<ValidationResult>();
+
+            if (newMovie.Genres == null)
+            {
+                ModelState.AddModelError("Genres", "Genres is required.");
+            }
+
+            if (!Validator.TryValidateObject(newMovie, new ValidationContext(newMovie), validationResultList))
             {
                 return base.BadRequest(ModelState);
             }
-
-            addActors(movieJson, newMovie);
-            addGenres(movieJson, newMovie);
 
             if (ModelState.IsValid)
             {
@@ -182,52 +186,99 @@ namespace MovieApp.Server.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] JsonElement movieJson)
         {
-            DateTime dateTime = DateTime.Parse(movieJson.GetProperty("releaseDate").GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
-            var picture = movieJson.GetProperty("picture");
-            var base64 = picture.GetProperty("image").ToString();
-            var newFileName = generateFileName(picture.GetProperty("name").ToString());
+            if (!movieJson.TryGetProperty("releaseDate", out var releaseDate) || string.IsNullOrEmpty(releaseDate.GetString()))
+            {
+                ModelState.AddModelError("releaseDate", "Release date is required.");
+            }
 
+            //DateTime dateTime = DateTime.Parse(movieJson.GetProperty("releaseDate").GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+            
             var movie = await movieService.FindMovie(id);
 
             if (movie != null)
             {
                 movie.Name = HtmlEncoder.Default.Encode(movieJson.GetProperty("name").GetString());
-                movie.ReleaseDate = DateOnly.FromDateTime(dateTime);
-                movie.DirectorId = movieJson.GetProperty("directorId").GetInt32();
+                //movie.ReleaseDate = DateOnly.FromDateTime(dateTime);
+                //movie.DirectorId = movieJson.GetProperty("directorId").GetInt32();
                 movie.Description = HtmlEncoder.Default.Encode(movieJson.GetProperty("description").GetString());
-                movie.ActorMovies = new List<ActorMovie>();
-                movie.Genres = new List<Genre>();
-            };
 
-            if (picture.GetProperty("name").ToString() != null &&
-                    movie.Picture?.ImagePath != picture.GetProperty("name").ToString())
-            {
-                movie.Picture = new Image
+                if (ModelState.IsValid)
                 {
-                    ImagePath = newFileName,
-                };
-                savePicture(base64, movie.Picture.ImagePath);
-            }
-
-            addActors(movieJson, movie);
-            addGenres(movieJson, movie);
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    movie.MovieId = id;
-                    await movieService.Update(movie);
-                    return base.Ok();
-                } catch(DbUpdateConcurrencyException)
-                {
-                    return base.NotFound();
-                } catch
-                {
-                    return base.Problem();
+                    try
+                    {
+                        DateTime dateTime = DateTime.Parse(releaseDate.GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                        movie.ReleaseDate = DateOnly.FromDateTime(dateTime);
+                    }
+                    catch (FormatException)
+                    {
+                        ModelState.AddModelError("releaseDate", "Invalid release date format.");
+                    }
                 }
+
+                movieJson.TryGetProperty("directorId", out var directorId);
+
+                if (directorId.ValueKind != JsonValueKind.Undefined && directorId.ValueKind != JsonValueKind.Null)
+                {
+                    movie.DirectorId = directorId.GetInt32();
+                }
+                else
+                {
+                    ModelState.AddModelError("Director", "Director is required.");
+                }
+                
+
+                if (movieJson.TryGetProperty("picture", out var newPicture) && !string.IsNullOrEmpty(newPicture.GetProperty("image").ToString()))
+                {
+                    var base64 = newPicture.GetProperty("image").ToString();
+                    var newFileName = generateFileName(newPicture.GetProperty("name").ToString());
+                    if (newPicture.GetProperty("name").ToString() != null &&
+                        movie.Picture?.ImagePath != newPicture.GetProperty("name").ToString())
+                    {
+                        movie.Picture = new Image
+                        {
+                            ImagePath = newFileName,
+                        };
+                        savePicture(base64, movie.Picture.ImagePath);
+                    }
+                }
+
+                addActors(movieJson, movie);
+                addGenres(movieJson, movie);
+
+                var validationResultList = new List<ValidationResult>();
+
+                if (movie.Genres == null)
+                {
+                    ModelState.AddModelError("Genres", "Genres is required.");
+                }
+
+                if (!Validator.TryValidateObject(movie, new ValidationContext(movie), validationResultList))
+                {
+                    return base.BadRequest(ModelState);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        movie.MovieId = id;
+                        await movieService.Update(movie);
+                        return base.Ok();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        return base.NotFound();
+                    }
+                    catch
+                    {
+                        return base.Problem();
+                    }
+                }
+                return base.BadRequest(ModelState);
+            } else
+            {
+                return base.NotFound();
             }
-            return base.BadRequest(ModelState);
         }
         [HttpDelete("delete/{id}")]
         public async Task<ActionResult> Delete(int id)
@@ -354,12 +405,7 @@ namespace MovieApp.Server.Controllers
 
         private string? getBase64(string? path)
         {
-            if (string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
-
-            var filePath = Path.Combine(env.WebRootPath, "images", path);
+            var filePath = !string.IsNullOrEmpty(path) ? Path.Combine(env.WebRootPath, "images", path) : null;
 
             if (!System.IO.File.Exists(filePath))
             {

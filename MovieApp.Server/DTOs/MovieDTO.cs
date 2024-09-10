@@ -12,7 +12,7 @@ namespace MovieApp.Server.DTOs
         public ImageDTO Picture { get; set; }
         public Director Director { get; set; }
         public List<GenreDTO> Genres { get; set; }
-        public List<ActorMovieDTO> Actors { get; set; }
+        public List<ActorMovieDTO>? Actors { get; set; } = null!;
         
     }
 }

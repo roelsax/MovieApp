@@ -134,7 +134,7 @@ export class AddMovieComponent implements OnInit {
   }
 
   async fillInMovieToEdit() {
-    const file = this.EditMovie?.picture ? await this.base64toFile(this.EditMovie.picture) : null;
+    const file = this.EditMovie?.picture?.imagePath ? await this.base64toFile(this.EditMovie.picture) : null;
     this.selectedFile = this.EditMovie?.picture.ImagePath != "" ? file : null;
 
     this.movieForm.patchValue({

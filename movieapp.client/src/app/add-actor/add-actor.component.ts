@@ -87,7 +87,7 @@ export class AddActorComponent implements OnInit {
   }
 
   async base64toFile(picture: any): Promise<File> {
-    let splitName = picture.imagePath?.split(".");
+    let splitName = picture?.imagePath?.split(".");
     const res: Response = await fetch("data:image/png;base64," + picture.base64);
     const blob: Blob = await res.blob();
     return new File([blob], picture.imagePath, { type: `image/${splitName[1]}` });
