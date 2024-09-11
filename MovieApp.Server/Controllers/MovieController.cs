@@ -120,10 +120,18 @@ namespace MovieApp.Server.Controllers
 
             Movie newMovie = new Movie()
             {
-                Name = HtmlEncoder.Default.Encode(movieJson.GetProperty("name").GetString()),
                 Picture = processPicture(movieJson),
-                Description = HtmlEncoder.Default.Encode(movieJson.GetProperty("description").GetString()),
+                Description = movieJson.TryGetProperty("description", out var movieDescription) ? HtmlEncoder.Default.Encode(movieDescription.GetString()) : "",
             };
+
+            if (!movieJson.TryGetProperty("name", out JsonElement movieName) || string.IsNullOrEmpty(movieName.GetString()))
+            {
+                ModelState.AddModelError("Name", "Name is required.");
+                
+            } else
+            {
+                newMovie.Name = HtmlEncoder.Default.Encode(movieName.GetString());
+            }
 
             if (ModelState.IsValid)
             {
@@ -190,17 +198,21 @@ namespace MovieApp.Server.Controllers
             {
                 ModelState.AddModelError("releaseDate", "Release date is required.");
             }
-
-            //DateTime dateTime = DateTime.Parse(movieJson.GetProperty("releaseDate").GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
             
             var movie = await movieService.FindMovie(id);
 
             if (movie != null)
             {
-                movie.Name = HtmlEncoder.Default.Encode(movieJson.GetProperty("name").GetString());
-                //movie.ReleaseDate = DateOnly.FromDateTime(dateTime);
-                //movie.DirectorId = movieJson.GetProperty("directorId").GetInt32();
-                movie.Description = HtmlEncoder.Default.Encode(movieJson.GetProperty("description").GetString());
+                if (!movieJson.TryGetProperty("name", out JsonElement movieName) || string.IsNullOrEmpty(movieName.GetString()))
+                {
+                    ModelState.AddModelError("Name", "Name is required.");
+
+                }
+                else
+                {
+                    movie.Name = HtmlEncoder.Default.Encode(movieName.GetString());
+                }
+                movie.Description = movieJson.TryGetProperty("description", out var movieDescription) ? HtmlEncoder.Default.Encode(movieDescription.GetString()) : "";
 
                 if (ModelState.IsValid)
                 {
@@ -405,9 +417,9 @@ namespace MovieApp.Server.Controllers
 
         private string? getBase64(string? path)
         {
-            var filePath = !string.IsNullOrEmpty(path) ? Path.Combine(env.WebRootPath, "images", path) : null;
+            var filePath = !string.IsNullOrEmpty(path) ? Path.Combine(env.WebRootPath, "images", path) : "";
 
-            if (!System.IO.File.Exists(filePath))
+            if (!System.IO.File.Exists(filePath) || filePath == "")
             {
                 filePath = Path.Combine(env.WebRootPath, "images", "dummy-image-square.jpg");
             }

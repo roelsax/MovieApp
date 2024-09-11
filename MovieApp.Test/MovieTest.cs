@@ -17,7 +17,6 @@ namespace MovieApp.Test
     {
         Mock<IMovieService> _mockMovieService = null!;
         Mock<IWebHostEnvironment> _mockWebHostEnvironment = null!;
-        Mock<IMovieRepository> mockRepository = null!;
         MovieController _controller = null!;
         Movie movie1 = null!;
         Movie movie2 = null!;
@@ -36,6 +35,7 @@ namespace MovieApp.Test
         {
             _mockMovieService = new Mock<IMovieService>(MockBehavior.Strict);
             _mockWebHostEnvironment = new Mock<IWebHostEnvironment>();
+            _mockWebHostEnvironment.Setup(env => env.WebRootPath).Returns(@"C:\Users\cursist\source\repos\MovieApp\MovieApp.Server\wwwroot");
             _controller = new MovieController(_mockMovieService.Object, _mockWebHostEnvironment.Object);
         }
 
@@ -73,8 +73,8 @@ namespace MovieApp.Test
                              .ReturnsAsync(movies);
 
             // Act
-            var result = await _controller.FindAll(null, null) as OkObjectResult;
             
+            var result = await _controller.FindAll(null, null) as OkObjectResult;
             // Assert
             Assert.IsNotNull(result);
             var actual = result.Value as List<MovieDTO>;
@@ -151,6 +151,23 @@ namespace MovieApp.Test
         }
 
         [TestMethod]
+        public async Task Create_MissingName_ReturnsBadRequest()
+        {
+            // Arrange
+            var movieJson = JsonDocument.Parse(@"{ ""releaseDate"": ""2023-09-01"", ""description"": ""A test movie"", ""directorId"": 1  }").RootElement;
+
+            // Act
+            var result = await _controller.Create(movieJson);
+
+            // Assert
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult, "Expected BadRequestObjectResult but got null.");
+            var modelState = badRequestResult.Value as SerializableError;
+            Assert.IsTrue(modelState.ContainsKey("Name"), "Expected error for missing name.");
+            Assert.AreEqual("Name is required.", ((string[])modelState["Name"])[0]);
+        }
+
+        [TestMethod]
         public async Task Create_ValidMovie_ReturnsOk()
         {
             //arrange
@@ -207,6 +224,24 @@ namespace MovieApp.Test
             var modelState = badRequestResult.Value as SerializableError;
             Assert.IsTrue(modelState.ContainsKey("Genres"), "Expected error for missing Genres.");
             Assert.AreEqual("Genres is required.", ((string[])modelState["Genres"])[0]);
+        }
+
+        [TestMethod]
+        public async Task Put_MissingName_ReturnsBadRequest()
+        {
+            // Arrange
+            var movieJson = JsonDocument.Parse(@"{ ""releaseDate"": ""2023-09-01"", ""description"": ""A test movie"", ""directorId"": 1  }").RootElement;
+            _mockMovieService.Setup(service => service.FindMovie(3))
+                             .ReturnsAsync(movie3);
+            // Act
+            var result = await _controller.Put(3, movieJson);
+
+            // Assert
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult, "Expected BadRequestObjectResult but got null.");
+            var modelState = badRequestResult.Value as SerializableError;
+            Assert.IsTrue(modelState.ContainsKey("Name"), "Expected error for missing name.");
+            Assert.AreEqual("Name is required.", ((string[])modelState["Name"])[0]);
         }
 
         [TestMethod]
