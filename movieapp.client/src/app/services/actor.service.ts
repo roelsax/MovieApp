@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Actor } from '../models/actor';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ActorService {
-  apiUrl = "https://localhost:7258/actors/";
+  apiUrl = `${environment.applicationUrl}/actors/`;
   constructor(private http: HttpClient) { }
 
   public getActors(): Observable<Actor[]>

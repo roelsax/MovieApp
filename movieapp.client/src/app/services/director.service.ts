@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Director } from '../models/director';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DirectorService {
-  apiUrl = "https://localhost:7258/directors/";
+  apiUrl = `${environment.applicationUrl}/directors/`;
   constructor(private http: HttpClient) { }
 
   public getDirectors(): Observable<Director[]> {
