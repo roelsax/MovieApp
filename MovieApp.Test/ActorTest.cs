@@ -134,7 +134,6 @@ namespace MovieApp.Test
                 Nationality = "Belgium",
             };
 
-
             _mockActorService.Setup(service => service.FindActor(3))
                 .ReturnsAsync(actor3);
 
@@ -282,7 +281,7 @@ namespace MovieApp.Test
         }
 
         [TestMethod]
-        public async Task Delete_NonExistingMovie_ReturnsNotFound()
+        public async Task Delete_NonExistingActor_ReturnsNotFound()
         {
             // Arrange
             int actorId = 3;

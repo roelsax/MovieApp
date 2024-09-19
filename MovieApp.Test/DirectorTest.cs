@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.NetworkInformation;
+using MovieApp.Server.Repositories.Seeding;
+using System.ComponentModel.DataAnnotations;
 
 namespace MovieApp.Test
 {
@@ -98,24 +100,202 @@ namespace MovieApp.Test
         }
 
         [TestMethod]
-        public async Task Create_MissingName_ReturnsBadRequest()
+        public async Task Create_ReturnsOkResult()
+        {
+            //Arrange
+            DirectorFormDTO directorData = new DirectorFormDTO
+            {
+                Name = "Koen Mortier",
+                DateOfBirth = "2024-09-11T22:00:00.000Z",
+                Bio = "blabla",
+                Location = "Brussels",
+                Nationality = "Belgium",
+            };
+
+            _mockDirectorService.Setup(service => service.Create(It.IsAny<Director>())).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Create(directorData);
+
+            // Assert
+            var okResult = result as OkResult;
+            Assert.IsNotNull(okResult, "Expected OkResult but got null.");
+        }
+
+        [TestMethod]
+        public async Task Put_ReturnsOkResult()
+        {
+            //Arrange
+            DirectorFormDTO directorData = new DirectorFormDTO
+            {
+                Name = "Koen Mortier",
+                DateOfBirth = "2024-09-11T22:00:00.000Z",
+                Bio = "blabla",
+                Location = "Brussels",
+                Nationality = "Belgium",
+            };
+
+            _mockDirectorService.Setup(service => service.FindDirector(3))
+                .ReturnsAsync(director3);
+
+            _mockDirectorService.Setup(service => service.Update(It.IsAny<Director>())).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Put(3, directorData);
+
+            // Assert
+            var okResult = result as OkResult;
+            Assert.IsNotNull(okResult, "Expected OkResult but got null.");
+        }
+
+        [TestMethod]
+        public async Task Validation_MissingName_ReturnsError()
         {
             // Arrange
             DirectorFormDTO directorData = new DirectorFormDTO
             {
                DateOfBirth = "2024-09-11T22:00:00.000Z",
                Bio = "blabla",
-               Location = "Brussels",
+                Location = "Brussels",
                Nationality = "Belgium"
             };
+            var context = new ValidationContext(directorData, null, null);
+            var results = new List<ValidationResult>();
 
             // Act
-            var result = await _controller.Create(directorData);
+            var isModelStateValid = Validator.TryValidateObject(directorData, context, results, true);
+
             // Assert
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult, "Expected BadRequestObjectResult but got null.");
-            var modelState = badRequestResult.Value as SerializableError;
-            Assert.IsTrue(modelState.ContainsKey("Name"), "Expected error for missing name.");
+            Assert.IsFalse(isModelStateValid, "Model should be invalid due to missing Name.");
+
+            var nameError = results.FirstOrDefault(r => r.MemberNames.Contains("Name"));
+            Assert.IsNotNull(nameError, "Expected validation error for missing Name.");
+            Assert.AreEqual("Name is required.", nameError.ErrorMessage);
         }
+
+        [TestMethod]
+        public async Task Validation_DateOfBirth_ReturnsError()
+        {
+            // Arrange
+            DirectorFormDTO directorData = new DirectorFormDTO
+            {
+                Name = "Koen Mortier",
+                Bio = "blabla",
+                Location = "Brussels",
+                Nationality = "Belgium"
+            };
+            var context = new ValidationContext(directorData, null, null);
+            var results = new List<ValidationResult>();
+
+            // Act
+            var isModelStateValid = Validator.TryValidateObject(directorData, context, results, true);
+
+            // Assert
+            Assert.IsFalse(isModelStateValid, "Model should be invalid due to missing Date of birth.");
+
+            var nameError = results.FirstOrDefault(r => r.MemberNames.Contains("DateOfBirth"));
+            Assert.IsNotNull(nameError, "Expected validation error for missing Date of birth.");
+            Assert.AreEqual("Date of birth is required.", nameError.ErrorMessage);
+        }
+
+        [TestMethod]
+        public async Task Validation_Location_ReturnsError()
+        {
+            // Arrange
+            DirectorFormDTO directorData = new DirectorFormDTO
+            {
+                Name = "Koen Mortier",
+                DateOfBirth = "2024-09-11T22:00:00.000Z",
+                Bio = "blabla",
+                Nationality = "Belgium"
+            };
+            var context = new ValidationContext(directorData, null, null);
+            var results = new List<ValidationResult>();
+
+            // Act
+            var isModelStateValid = Validator.TryValidateObject(directorData, context, results, true);
+
+            // Assert
+            Assert.IsFalse(isModelStateValid, "Model should be invalid due to missing Location.");
+
+            var nameError = results.FirstOrDefault(r => r.MemberNames.Contains("Location"));
+            Assert.IsNotNull(nameError, "Expected validation error for missing Location.");
+            Assert.AreEqual("Location is required.", nameError.ErrorMessage);
+        }
+
+        [TestMethod]
+        public async Task Validation_Country_ReturnsError()
+        {
+            // Arrange
+            DirectorFormDTO directorData = new DirectorFormDTO
+            {
+                Name = "Jean Claude Van Damme",
+                DateOfBirth = "2024-09-11T22:00:00.000Z",
+                Bio = "blabla",
+                Location = "Brussels"
+            };
+            var context = new ValidationContext(directorData, null, null);
+            var results = new List<ValidationResult>();
+
+            // Act
+            var isModelStateValid = Validator.TryValidateObject(directorData, context, results, true);
+
+            // Assert
+            Assert.IsFalse(isModelStateValid, "Model should be invalid due to missing Country.");
+
+            var nameError = results.FirstOrDefault(r => r.MemberNames.Contains("Nationality"));
+            Assert.IsNotNull(nameError, "Expected validation error for missing Country.");
+            Assert.AreEqual("Country is required.", nameError.ErrorMessage);
+        }
+
+        [TestMethod]
+        public async Task Delete_Director_ReturnsOk()
+        {
+            // Arrange
+            int directorId = 3;
+            var director = new Director
+            {
+                Name = "Koen Mortier",
+                DateOfBirth = new DateOnly(1963, 12, 18),
+                Bio = "blabla",
+                Location = "Brussel",
+                Nationality = "Belgium"
+            };
+
+            _mockDirectorService.Setup(service => service.FindDirector(directorId))
+                .ReturnsAsync(director);
+
+            _mockDirectorService.Setup(service => service.Remove(directorId))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Delete(directorId);
+
+            // Assert
+            var okResult = result as OkResult;
+            Assert.IsNotNull(okResult, "Expected OkResult but got null.");
+
+            _mockDirectorService.Verify(service => service.Remove(directorId), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task Delete_NonExistingDirector_ReturnsNotFound()
+        {
+            // Arrange
+            int directorId = 3;
+
+            _mockDirectorService.Setup(service => service.FindDirector(directorId))
+                .ReturnsAsync((Director)null);    
+
+            // Act
+            var result = await _controller.Delete(directorId);
+
+            // Assert
+            var notFoundResult = result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+
+            _mockDirectorService.Verify(service => service.Remove(It.IsAny<int>()), Times.Never);
+        }
+
     }
 }
