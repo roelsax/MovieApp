@@ -5,6 +5,7 @@ namespace MovieApp.Server.DTOs
     public class ActorDTO
     {
         public int ActorId { get; set; }
+
         public string Name { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public string? Location { get; set; }

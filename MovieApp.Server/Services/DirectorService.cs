@@ -3,7 +3,7 @@ using MovieApp.Server.Models;
 
 namespace MovieApp.Server.Services
 {
-    public class DirectorService
+    public class DirectorService : IDirectorService
     {
         private readonly IDirectorRepository repository;
 

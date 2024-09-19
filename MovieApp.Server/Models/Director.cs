@@ -18,6 +18,6 @@ namespace MovieApp.Server.Models
 
         [Timestamp]
         public byte[]? Aangepast { get; set; }
-        public List<Movie> Movies { get; set; } = null!;
+        public List<Movie>? Movies { get; set; } = null!;
     }
 }

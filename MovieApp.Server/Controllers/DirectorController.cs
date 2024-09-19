@@ -4,12 +4,13 @@ using MovieApp.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using MovieApp.Server.DTOs;
 using System.Text.Encodings.Web;
+using System.ComponentModel.DataAnnotations;
 
 namespace MovieApp.Server.Controllers
 {
     [Route("directors")]
     [ApiController]
-    public class DirectorController(DirectorService directorService, IWebHostEnvironment env) : Controller
+    public class DirectorController(IDirectorService directorService, IWebHostEnvironment env) : Controller
     {
         [HttpGet]
         public async Task<ActionResult> FindAll() 
@@ -46,7 +47,7 @@ namespace MovieApp.Server.Controllers
                 return base.NotFound();
             }
 
-            DirectorDTO directorMapped = new DirectorDTO 
+            DirectorDTO directorMapped = new DirectorDTO
             {
                 DirectorId = director.DirectorId,
                 Name = director.Name,
@@ -59,7 +60,7 @@ namespace MovieApp.Server.Controllers
                     ImagePath = director.Picture?.ImagePath ?? null,
                     Base64 = getBase64(director.Picture?.ImagePath ?? null)
                 },
-                Movies = director.Movies.Select(m => new MovieDTO
+                Movies = director.Movies?.Count() > 0 ? director.Movies.Select(m => new MovieDTO
                 {
                     MovieId = m.MovieId,
                     Name = m.Name,
@@ -68,7 +69,7 @@ namespace MovieApp.Server.Controllers
                         ImagePath = m.Picture?.ImagePath ?? null,
                         Base64 = getBase64(m.Picture?.ImagePath ?? null)
                     }
-                }).ToList()
+                }).ToList() : null
             };
 
             return base.Ok(directorMapped);
@@ -77,9 +78,15 @@ namespace MovieApp.Server.Controllers
         [HttpPost("create")]
         public async Task<ActionResult> Create([FromForm] DirectorFormDTO director)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (!DateTimeOffset.TryParse(director.DateOfBirth, out var dateTimeOffset))
             {
-                return BadRequest("Invalid date format.");
+                ModelState.AddModelError(nameof(director.DateOfBirth), "Invalid date format.");
+                return BadRequest(ModelState);
             }
 
             Director newDirector = new Director()

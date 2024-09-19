@@ -122,7 +122,7 @@ export class AddDirectorComponent implements OnInit {
       }, handleError)
       return;
     }
-
+    
     if (this.editMode && this.editDirector != null)
     {
       this.directorService.editDirector(formData, this.editDirector.directorId, handleSuccess, handleError)

@@ -11,9 +11,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
 });
 builder.Services.AddDbContext<MovieAppContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("movieapp")));
-builder.Services.AddTransient<ActorService>();
+builder.Services.AddTransient<IActorService, ActorService>();
 builder.Services.AddScoped<IActorRepository, SQLActorRepository>();
-builder.Services.AddTransient<DirectorService>();
+builder.Services.AddTransient<IDirectorService, DirectorService>();
 builder.Services.AddScoped<IDirectorRepository, SQLDirectorRepository>();
 builder.Services.AddTransient<IMovieService, MovieService>();
 builder.Services.AddScoped<IMovieRepository, SQLMovieRepository>();

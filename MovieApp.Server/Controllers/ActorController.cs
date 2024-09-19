@@ -11,7 +11,7 @@ namespace MovieApp.Server.Controllers
 {
     [Route("actors")]
     [ApiController]
-    public class ActorController(ActorService actorService, IWebHostEnvironment env) : Controller
+    public class ActorController(IActorService actorService, IWebHostEnvironment env) : Controller
     {
         private static readonly object _fileLock = new object();
 
@@ -81,7 +81,7 @@ namespace MovieApp.Server.Controllers
     }
 
         [HttpPost("create")]
-        public async Task<ActionResult> Create([FromForm] ActorFormDTO actor)
+        public async Task<ActionResult> Create([FromBody] ActorFormDTO actor)
         {
             if (!DateTimeOffset.TryParse(actor.DateOfBirth, out var dateTimeOffset))
             {
@@ -90,7 +90,7 @@ namespace MovieApp.Server.Controllers
 
             Actor newActor = new Actor()
             {
-                Name = HtmlEncoder.Default.Encode(actor.Name),
+                Name = actor.Name != null ? HtmlEncoder.Default.Encode(actor.Name) : null,
                 DateOfBirth = DateOnly.FromDateTime(dateTimeOffset.DateTime),
                 Bio = HtmlEncoder.Default.Encode(actor.Bio),
                 Location = HtmlEncoder.Default.Encode(actor.Location),

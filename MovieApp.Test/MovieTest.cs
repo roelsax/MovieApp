@@ -84,7 +84,7 @@ namespace MovieApp.Test
         }
 
         [TestMethod]
-        public async Task TestFindById()
+        public async Task TestFindById_ReturnsOkResult()
         {
             //arrange
 

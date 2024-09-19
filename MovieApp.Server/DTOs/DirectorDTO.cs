@@ -11,7 +11,7 @@ namespace MovieApp.Server.DTOs
         public string? Nationality { get; set; }
         public string? Bio { get; set; }
         public ImageDTO? Picture { get; set; }
-        public List<MovieDTO> Movies { get; set; } = null!;
+        public List<MovieDTO>? Movies { get; set; } = null!;
 
     }
 }
