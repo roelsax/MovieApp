@@ -71,7 +71,7 @@ export class AddDirectorComponent implements OnInit {
 
   async fillInActorToEdit() {
 
-    const file = this.editDirector?.picture ? await this.base64toFile(this.editDirector.picture) : null;
+    const file = this.editDirector?.picture?.imagePath ? await this.base64toFile(this.editDirector.picture) : null;
     this.selectedFile = this.editDirector?.picture.ImagePath != "" ? file : null;
 
     this.directorForm.patchValue({

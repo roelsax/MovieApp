@@ -73,7 +73,7 @@ export class AddActorComponent implements OnInit {
 
   async fillInActorToEdit() {
 
-    const file = this.EditActor?.picture ? await this.base64toFile(this.EditActor.picture) : null;
+    const file = this.EditActor?.picture?.imagePath ? await this.base64toFile(this.EditActor.picture) : null;
     this.selectedFile = this.EditActor?.picture.ImagePath != "" ? file : null;
     
     this.actorForm.patchValue({
