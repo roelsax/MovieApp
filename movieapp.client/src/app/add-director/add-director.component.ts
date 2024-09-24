@@ -115,7 +115,7 @@ export class AddDirectorComponent implements OnInit {
     const handleError = (errors: any) => {
       this.displayValidationErrors(errors);
     };
-
+    
     if (localStorage.getItem('movieData')) {
       this.directorService.addDirector(formData, () => {
         this.router.navigate(['/add-movie']);
@@ -126,6 +126,7 @@ export class AddDirectorComponent implements OnInit {
     if (this.editMode && this.editDirector != null)
     {
       this.directorService.editDirector(formData, this.editDirector.directorId, handleSuccess, handleError)
+      return;
     } else {
       this.directorService.addDirector(formData, handleSuccess, handleError)
     }

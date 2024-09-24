@@ -116,7 +116,7 @@ export class AddActorComponent implements OnInit {
     const handleError = (errors: any) => {
       this.displayValidationErrors(errors);
     };
-
+    
     if (localStorage.getItem('movieData')) {
       this.actorService.addActor(formData, () => {
         this.router.navigate(['/add-movie']);

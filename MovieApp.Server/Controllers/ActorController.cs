@@ -81,7 +81,7 @@ namespace MovieApp.Server.Controllers
     }
 
         [HttpPost("create")]
-        public async Task<ActionResult> Create([FromBody] ActorFormDTO actor)
+        public async Task<ActionResult> Create([FromForm] ActorFormDTO actor)
         {
             if (!DateTimeOffset.TryParse(actor.DateOfBirth, out var dateTimeOffset))
             {
@@ -203,8 +203,8 @@ namespace MovieApp.Server.Controllers
                 Directory.CreateDirectory("images");
             }
 
-            lock (_fileLock)
-            {
+            
+            
                 if (!System.IO.File.Exists(filePath))
                 {
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -212,7 +212,7 @@ namespace MovieApp.Server.Controllers
                         file.CopyToAsync(stream).GetAwaiter().GetResult();
                     }
                 }
-            }
+            
         }
 
         private string generateFileName(IFormFile file)

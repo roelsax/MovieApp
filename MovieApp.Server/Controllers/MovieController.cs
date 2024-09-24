@@ -340,7 +340,7 @@ namespace MovieApp.Server.Controllers
         private Image? processPicture(JsonElement movieJson)
         {
             
-            if (movieJson.TryGetProperty("picture", out var picture) && !string.IsNullOrEmpty(picture.GetString()))
+            if (movieJson.TryGetProperty("picture", out var picture) && picture.ValueKind != JsonValueKind.Null)
             {
                 var base64 = picture.GetProperty("image").ToString();
                 var newFileName = generateFileName(picture.GetProperty("name").ToString());
